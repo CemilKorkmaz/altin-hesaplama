@@ -28,6 +28,35 @@ void main() {
     expect(quotes[GoldType.quarter]!.changePercent, -0.20);
   });
 
+  test('Altın API veri paketini uygulama türlerine dönüştürür', () {
+    final quotes = GoldPriceService.parseAltinApiResponse({
+      'stale': false,
+      'data': [
+        {'symbol': 'ALTIN', 'bid': 6611.16, 'ask': 6639.34},
+        {'symbol': 'CEYREK_YENI', 'bid': 10800.0, 'ask': 11000.0},
+        {'symbol': 'YARIM_YENI', 'bid': 21600.0, 'ask': 22000.0},
+        {'symbol': 'TAM_YENI', 'bid': 43200.0, 'ask': 44000.0},
+        {'symbol': 'AYAR22', 'bid': 6000.0, 'ask': 6150.0},
+        {'symbol': 'AYAR14', 'bid': 3800.0, 'ask': 3950.0},
+      ],
+    });
+
+    expect(quotes[GoldType.gram]!.buy, 6611.16);
+    expect(quotes[GoldType.gram]!.sell, 6639.34);
+    expect(quotes[GoldType.quarter]!.sell, 11000);
+    expect(quotes[GoldType.half]!.sell, 22000);
+    expect(quotes[GoldType.full]!.sell, 44000);
+    expect(quotes[GoldType.bracelet22]!.sell, 6150);
+    expect(quotes[GoldType.gold14]!.sell, 3950);
+  });
+
+  test('Altın API verisi eskiyse canlı fiyat olarak kabul etmez', () {
+    expect(
+      () => GoldPriceService.parseAltinApiResponse({'stale': true, 'data': []}),
+      throwsFormatException,
+    );
+  });
+
   test('eksik veya geçersiz fiyatı olan türü atlar', () {
     final quotes = GoldPriceService.parseResponse({
       'GA': {'alis': 'hatalı', 'satis': '5.950,20'},

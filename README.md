@@ -44,4 +44,8 @@ Testler; Türkçe fiyat biçimi çözümleme, portföy/kâr-zarar matematiği, s
 
 ## Fiyat kaynağı
 
-`https://api.genelpara.com/json/?list=altin` kullanılır. Servis yanıt vermezse uygulama bunu gizlemez; “Örnek fiyat” etiketi gösterilir. Üretim kullanımında fiyat sağlayıcısının kullanım koşulları ve erişilebilirliği ayrıca değerlendirilmelidir.
+Birincil kaynak `https://altinapi.com/api/prices` servisidir. API anahtarı derleme sırasında `--dart-define=ALTINAPI_KEY=...` ile verilir ve `x-api-key` başlığıyla gönderilir. Anahtar Git deposunda tutulmaz.
+
+Altın API'ye erişilemezse `https://api.genelpara.com/json/?list=altin` yedek kaynak olarak denenir. Her iki servis de yanıt vermezse uygulama bunu gizlemez; “Örnek fiyat” etiketi gösterilir. Fiyat ekranında aktif kaynak görüntülenir.
+
+> Test APK'sına derleme sırasında eklenen anahtarlar deneyimli kullanıcılar tarafından çıkarılabilir. Herkese açık üretim sürümünde anahtar bir backend proxy arkasında tutulmalıdır. Sağlayıcının kullanım koşulları ve erişilebilirliği ayrıca değerlendirilmelidir.

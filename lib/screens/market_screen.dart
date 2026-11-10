@@ -39,7 +39,7 @@ class MarketScreen extends StatelessWidget {
                     Expanded(
                       child: Text(
                         market.updatedAt == null
-                            ? 'Fiyat kaynağı: Genel Para'
+                            ? 'Fiyat kaynağı: ${market.source}'
                             : 'Son güncelleme ${formatTime(market.updatedAt!)}',
                         style: const TextStyle(fontSize: 13, color: CupertinoColors.systemGrey),
                       ),

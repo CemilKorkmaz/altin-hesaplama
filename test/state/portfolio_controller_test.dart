@@ -21,6 +21,9 @@ class FakePrices implements PriceProvider {
   bool shouldFail;
 
   @override
+  String get sourceName => 'Test';
+
+  @override
   Future<Map<GoldType, GoldQuote>> fetchQuotes() async {
     if (shouldFail) throw Exception('Çevrimdışı');
     return {GoldType.gram: const GoldQuote(type: GoldType.gram, buy: 1450, sell: 1500)};

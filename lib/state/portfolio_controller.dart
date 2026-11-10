@@ -53,12 +53,14 @@ class PortfolioController extends ChangeNotifier {
         quotes: quotes,
         isLive: true,
         updatedAt: DateTime.now(),
+        source: _priceProvider.sourceName,
       );
     } on Object {
       _market = MarketSnapshot(
         quotes: _market.quotes,
         isLive: false,
         updatedAt: _market.updatedAt,
+        source: _market.source,
         message: _market.updatedAt == null
             ? 'Canlı fiyata ulaşılamadı. Örnek fiyatlar kullanılıyor.'
             : 'Bağlantı kurulamadı. Son alınan fiyatlar gösteriliyor.',
