@@ -23,7 +23,15 @@ flutter pub get
 flutter run
 ```
 
-iOS için macOS ve Xcode gerekir. Android için Android Studio/SDK kullanılabilir.
+iOS için macOS ve Xcode gerekir. Android için Android Studio/SDK kullanılabilir. Android 7.0 (API 24) ve üzeri desteklenir.
+
+Android kurulum dosyası üretmek için:
+
+```sh
+flutter build apk --release
+```
+
+APK, `build/app/outputs/flutter-apk/app-release.apk` konumunda oluşur.
 
 ## Test ve analiz
 

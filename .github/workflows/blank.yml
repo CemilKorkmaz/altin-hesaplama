@@ -2,7 +2,7 @@ name: Flutter CI
 
 on:
   push:
-    branches: [main, arena/bf79af63-altin-hesaplama]
+    branches: [main, arena/bf79af63-altin-hesaplama, arena/26e12ef2-altin-hesaplama]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -45,6 +45,40 @@ jobs:
             python3 -c 'from pathlib import Path; text=Path("test.log").read_text(); print("::error::" + text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))'
           fi
           exit $status
+
+  android-apk:
+    needs: analyze-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Android proje dosyalarını doğrula
+        run: flutter create --platforms=android --org com.cemilkorkmaz .
+      - run: flutter pub get
+      - name: Android release APK derlemesi
+        run: flutter build apk --release
+      - name: APK dosyasını adlandır
+        run: cp build/app/outputs/flutter-apk/app-release.apk altin-defterim.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: altin-defterim-android-apk
+          path: altin-defterim.apk
+      - name: İndirilebilir Android test sürümü
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-v1.0.0
+          name: Altın Defterim Android 1.0.0
+          prerelease: true
+          body: |
+            Android 7.0 ve üzeri için test APK'sı.
+            Bilinmeyen uygulamalara izin vererek APK'yı kurabilirsiniz.
+            Bu sürüm test amaçlıdır; gerçek alım/satım yapmaz.
+          files: altin-defterim.apk
 
   ios-build:
     needs: analyze-and-test
