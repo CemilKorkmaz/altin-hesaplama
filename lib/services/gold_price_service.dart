@@ -17,8 +17,8 @@ class GoldPriceService implements PriceProvider {
             const String.fromEnvironment('ALTINAPI_KEY', defaultValue: '');
 
   static const altinApiEndpoints = [
-    'https://haremapi.tr/api/prices',
-    'https://altinapi.com/api/prices',
+    'https://altinapi.com/api/v1/prices',
+    'https://haremapi.tr/api/v1/prices',
   ];
   static const fallbackEndpoint = 'https://api.genelpara.com/json/?list=altin';
   static const _altinApiSymbols = <GoldType, List<String>>{

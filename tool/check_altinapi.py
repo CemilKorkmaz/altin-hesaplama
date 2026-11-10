@@ -8,8 +8,8 @@ import urllib.error
 import urllib.request
 
 ENDPOINTS = (
-    "https://haremapi.tr/api/prices",
-    "https://altinapi.com/api/prices",
+    "https://altinapi.com/api/v1/prices",
+    "https://haremapi.tr/api/v1/prices",
 )
 REQUIRED = {"ALTIN", "CEYREK_YENI", "YARIM_YENI", "TAM_YENI", "AYAR22", "AYAR14"}
 
