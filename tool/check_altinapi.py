@@ -11,7 +11,15 @@ ENDPOINTS = (
     "https://altinapi.com/api/v1/prices",
     "https://haremapi.tr/api/v1/prices",
 )
-REQUIRED = {"ALTIN", "CEYREK_YENI", "YARIM_YENI", "TAM_YENI", "AYAR22", "AYAR14"}
+REQUIRED = {
+    "ALTIN",
+    "CEYREK_YENI",
+    "YARIM_YENI",
+    "TEK_YENI",
+    "ATA_YENI",
+    "AYAR22",
+    "AYAR14",
+}
 
 
 def check_endpoint(endpoint, api_key):

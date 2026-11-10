@@ -35,7 +35,8 @@ void main() {
         {'symbol': 'ALTIN', 'bid': 6611.16, 'ask': 6639.34},
         {'symbol': 'CEYREK_YENI', 'bid': 10800.0, 'ask': 11000.0},
         {'symbol': 'YARIM_YENI', 'bid': 21600.0, 'ask': 22000.0},
-        {'symbol': 'TAM_YENI', 'bid': 43200.0, 'ask': 44000.0},
+        {'symbol': 'TEK_YENI', 'bid': 43200.0, 'ask': 44000.0},
+        {'symbol': 'ATA_YENI', 'bid': 47000.0, 'ask': 48000.0},
         {'symbol': 'AYAR22', 'bid': 6000.0, 'ask': 6150.0},
         {'symbol': 'AYAR14', 'bid': 3800.0, 'ask': 3950.0},
       ],
@@ -46,6 +47,7 @@ void main() {
     expect(quotes[GoldType.quarter]!.sell, 11000);
     expect(quotes[GoldType.half]!.sell, 22000);
     expect(quotes[GoldType.full]!.sell, 44000);
+    expect(quotes[GoldType.republic]!.sell, 48000);
     expect(quotes[GoldType.bracelet22]!.sell, 6150);
     expect(quotes[GoldType.gold14]!.sell, 3950);
   });
