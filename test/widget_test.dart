@@ -6,6 +6,7 @@ import 'package:altin_hesaplama/services/portfolio_store.dart';
 import 'package:altin_hesaplama/state/portfolio_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class TestStore implements PurchaseStore {
   final List<Purchase> purchases = [];
@@ -27,6 +28,8 @@ class TestPrices implements PriceProvider {
 }
 
 void main() {
+  setUpAll(() => initializeDateFormatting('tr_TR'));
+
   testWidgets('alış ekleme ve satış simülasyonu uçtan uca çalışır', (tester) async {
     final controller = PortfolioController(
       store: TestStore(),
