@@ -17,7 +17,14 @@ REQUIRED = {"ALTIN", "CEYREK_YENI", "YARIM_YENI", "TAM_YENI", "AYAR22", "AYAR14"
 def check_endpoint(endpoint, api_key):
     request = urllib.request.Request(
         endpoint,
-        headers={"Accept": "application/json", "x-api-key": api_key},
+        headers={
+            "Accept": "application/json",
+            "User-Agent": (
+                "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
+            ),
+            "x-api-key": api_key,
+        },
     )
     try:
         with urllib.request.urlopen(request, timeout=15) as response:
