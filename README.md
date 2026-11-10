@@ -44,7 +44,7 @@ Testler; Türkçe fiyat biçimi çözümleme, portföy/kâr-zarar matematiği, s
 
 ## Fiyat kaynağı
 
-Birincil kaynak `https://altinapi.com/api/prices` servisidir. API anahtarı derleme sırasında `--dart-define=ALTINAPI_KEY=...` ile verilir ve `x-api-key` başlığıyla gönderilir. Anahtar Git deposunda tutulmaz.
+Birincil kaynaklar `https://haremapi.tr/api/prices` ve aynı anahtar/yanıt biçimini kullanan `https://altinapi.com/api/prices` servisleridir. Uygulama erişilebilir olanı otomatik seçer. API anahtarı derleme sırasında `--dart-define=ALTINAPI_KEY=...` ile verilir ve `x-api-key` başlığıyla gönderilir. Anahtar Git deposunda tutulmaz.
 
 Altın API'ye erişilemezse `https://api.genelpara.com/json/?list=altin` yedek kaynak olarak denenir. Her iki servis de yanıt vermezse uygulama bunu gizlemez; “Örnek fiyat” etiketi gösterilir. Fiyat ekranında aktif kaynak görüntülenir.
 

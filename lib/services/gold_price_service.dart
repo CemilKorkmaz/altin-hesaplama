@@ -16,7 +16,10 @@ class GoldPriceService implements PriceProvider {
         _apiKey = apiKey ??
             const String.fromEnvironment('ALTINAPI_KEY', defaultValue: '');
 
-  static const altinApiEndpoint = 'https://altinapi.com/api/prices';
+  static const altinApiEndpoints = [
+    'https://haremapi.tr/api/prices',
+    'https://altinapi.com/api/prices',
+  ];
   static const fallbackEndpoint = 'https://api.genelpara.com/json/?list=altin';
   static const _altinApiSymbols = <GoldType, List<String>>{
     GoldType.gram: ['ALTIN'],
@@ -39,29 +42,33 @@ class GoldPriceService implements PriceProvider {
   @override
   Future<Map<GoldType, GoldQuote>> fetchQuotes() async {
     if (_apiKey.isNotEmpty) {
-      try {
-        final response = await _client
-            .get(
-              Uri.parse(altinApiEndpoint),
-              headers: {
-                'Accept': 'application/json',
-                'x-api-key': _apiKey,
-              },
-            )
-            .timeout(const Duration(seconds: 12));
-        if (response.statusCode != 200) {
-          throw Exception('Altın API ${response.statusCode} yanıtı verdi.');
+      for (final endpoint in altinApiEndpoints) {
+        try {
+          final response = await _client
+              .get(
+                Uri.parse(endpoint),
+                headers: {
+                  'Accept': 'application/json',
+                  'x-api-key': _apiKey,
+                },
+              )
+              .timeout(const Duration(seconds: 12));
+          if (response.statusCode != 200) {
+            throw Exception('Fiyat API’si ${response.statusCode} yanıtı verdi.');
+          }
+          final quotes = parseAltinApiResponse(
+            jsonDecode(utf8.decode(response.bodyBytes)),
+          );
+          if (quotes.isEmpty) {
+            throw const FormatException('Fiyat API’si fiyatları alınamadı.');
+          }
+          _sourceName = endpoint.contains('haremapi.tr')
+              ? 'HaremAPI'
+              : 'Altın API';
+          return quotes;
+        } on Object {
+          // Aynı anahtar biçimini kullanan diğer sağlayıcıyı dene.
         }
-        final quotes = parseAltinApiResponse(
-          jsonDecode(utf8.decode(response.bodyBytes)),
-        );
-        if (quotes.isEmpty) {
-          throw const FormatException('Altın API fiyatları alınamadı.');
-        }
-        _sourceName = 'Altın API';
-        return quotes;
-      } on Object {
-        // Ücretsiz yedek servisle uygulamanın fiyat göstermeye devam etmesini sağla.
       }
     }
 
