@@ -100,7 +100,7 @@ class PortfolioController extends ChangeNotifier {
   void dispose() {
     _timer?.cancel();
     if (_priceProvider is GoldPriceService) {
-      (_priceProvider as GoldPriceService).dispose();
+      _priceProvider.dispose();
     }
     super.dispose();
   }

@@ -117,7 +117,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
                             alignment: Alignment.centerRight,
                             child: CupertinoButton(
                               padding: EdgeInsets.zero,
-                              minSize: 28,
+                              minimumSize: Size.square(28),
                               onPressed: _useMarketPrice,
                               child: const Text('Piyasa satış fiyatını kullan', style: TextStyle(fontSize: 12)),
                             ),
