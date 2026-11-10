@@ -28,6 +28,9 @@ jobs:
           printf '```text\n' >> "$GITHUB_STEP_SUMMARY"
           cat analysis.log >> "$GITHUB_STEP_SUMMARY"
           printf '\n```\n' >> "$GITHUB_STEP_SUMMARY"
+          if [ $status -ne 0 ]; then
+            python3 -c 'from pathlib import Path; text=Path("analysis.log").read_text(); print("::error::" + text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))'
+          fi
           exit $status
       - name: Flutter testleri
         run: |
@@ -38,6 +41,9 @@ jobs:
           printf '```text\n' >> "$GITHUB_STEP_SUMMARY"
           tail -150 test.log >> "$GITHUB_STEP_SUMMARY"
           printf '\n```\n' >> "$GITHUB_STEP_SUMMARY"
+          if [ $status -ne 0 ]; then
+            python3 -c 'from pathlib import Path; text=Path("test.log").read_text(); print("::error::" + text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))'
+          fi
           exit $status
 
   ios-build:
