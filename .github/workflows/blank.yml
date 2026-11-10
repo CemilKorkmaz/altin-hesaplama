@@ -19,10 +19,29 @@ jobs:
       - name: Platform dosyalarını doğrula
         run: flutter create --platforms=android,ios --org com.cemilkorkmaz .
       - run: flutter pub get
-      - run: flutter analyze
-      - run: flutter test --coverage
+      - name: Flutter analiz
+        run: |
+          set +e
+          flutter analyze > analysis.log 2>&1
+          status=$?
+          cat analysis.log
+          printf '```text\n' >> "$GITHUB_STEP_SUMMARY"
+          cat analysis.log >> "$GITHUB_STEP_SUMMARY"
+          printf '\n```\n' >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+      - name: Flutter testleri
+        run: |
+          set +e
+          flutter test --coverage > test.log 2>&1
+          status=$?
+          cat test.log
+          printf '```text\n' >> "$GITHUB_STEP_SUMMARY"
+          tail -150 test.log >> "$GITHUB_STEP_SUMMARY"
+          printf '\n```\n' >> "$GITHUB_STEP_SUMMARY"
+          exit $status
 
   ios-build:
+    needs: analyze-and-test
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
