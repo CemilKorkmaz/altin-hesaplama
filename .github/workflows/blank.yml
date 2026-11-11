@@ -17,7 +17,15 @@ jobs:
           channel: stable
           cache: true
       - name: Platform dosyalarını doğrula
-        run: flutter create --platforms=android,ios --org com.cemilkorkmaz .
+        run: |
+          set +e
+          flutter create --platforms=android,ios --org com.cemilkorkmaz . > create.log 2>&1
+          status=$?
+          cat create.log
+          if [ $status -ne 0 ]; then
+            python3 -c 'from pathlib import Path; text=Path("create.log").read_text(); print("::error::" + text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))'
+          fi
+          exit $status
       - run: flutter pub get
       - name: Flutter analiz
         run: |
