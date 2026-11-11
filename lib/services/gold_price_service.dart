@@ -69,13 +69,28 @@ class GoldPriceService implements PriceProvider {
   }
 
   Future<dynamic> _getJson(String endpoint) async {
-    final response = await _client
-        .get(Uri.parse(endpoint), headers: {'Accept': 'application/json'})
-        .timeout(const Duration(seconds: 12));
-    if (response.statusCode != 200) {
-      throw Exception('Fiyat servisi ${response.statusCode} yanıtı verdi.');
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        final response = await _client
+            .get(
+              Uri.parse(endpoint),
+              headers: {
+                'Accept': 'application/json',
+                'User-Agent':
+                    'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 '
+                        '(KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36',
+              },
+            )
+            .timeout(const Duration(seconds: 12));
+        if (response.statusCode != 200) {
+          throw Exception('Fiyat servisi ${response.statusCode} yanıtı verdi.');
+        }
+        return jsonDecode(utf8.decode(response.bodyBytes));
+      } on Object {
+        if (attempt == 2) rethrow;
+        await Future<void>.delayed(Duration(milliseconds: 600 * (attempt + 1)));
+      }
     }
-    return jsonDecode(utf8.decode(response.bodyBytes));
   }
 
   static Map<GoldType, GoldQuote> parseTruncgilResponse(
