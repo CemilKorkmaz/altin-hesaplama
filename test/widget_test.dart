@@ -4,7 +4,7 @@ import 'package:altin_hesaplama/models/purchase.dart';
 import 'package:altin_hesaplama/services/gold_price_service.dart';
 import 'package:altin_hesaplama/services/portfolio_store.dart';
 import 'package:altin_hesaplama/state/portfolio_controller.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 

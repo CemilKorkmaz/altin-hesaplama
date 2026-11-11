@@ -101,7 +101,7 @@ class GoldPriceService implements PriceProvider {
   static DateTime? parseTruncgilUpdatedAt(dynamic raw) {
     if (raw is! String || raw.isEmpty) return null;
     final normalized = raw.trim().replaceFirst(' ', 'T');
-    final local = DateTime.tryParse('${normalized}+03:00');
+    final local = DateTime.tryParse('$normalized+03:00');
     return local?.toLocal();
   }
 
