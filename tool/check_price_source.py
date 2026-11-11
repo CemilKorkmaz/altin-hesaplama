@@ -1,30 +1,41 @@
 #!/usr/bin/env python3
-"""Anahtarsız fiyat kaynağını fiyatları yazdırmadan doğrular."""
+"""Anahtarsız Truncgil kaynaklarını fiyatları yazdırmadan doğrular."""
 
 import datetime
 import json
 import time
 import urllib.request
 
-ENDPOINT = "https://finans.truncgil.com/v4/today.json"
+ENDPOINTS = (
+    "https://finans.truncgil.com/today.json",
+    "https://finans.truncgil.com/v4/today.json",
+)
 REQUIRED = {
-    "GRA",
-    "CEYREKALTIN",
-    "YARIMALTIN",
-    "TAMALTIN",
-    "CUMHURIYETALTINI",
-    "YIA",
-    "18AYARALTIN",
-    "14AYARALTIN",
+    "gram": ("gram-altin", "GRA"),
+    "quarter": ("ceyrek-altin", "CEYREKALTIN"),
+    "half": ("yarim-altin", "YARIMALTIN"),
+    "full": ("tam-altin", "TAMALTIN"),
+    "republic": ("cumhuriyet-altini", "CUMHURIYETALTINI"),
+    "22": ("22-ayar-bilezik", "YIA"),
+    "18": ("18-ayar-altin", "18AYARALTIN"),
+    "14": ("14-ayar-altin", "14AYARALTIN"),
 }
 
 
-def fetch_with_retries():
+def number(value):
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        return float(value.replace(".", "").replace(",", "."))
+    return 0
+
+
+def fetch_with_retries(endpoint):
     last_error = None
-    for attempt in range(4):
+    for attempt in range(3):
         try:
             request = urllib.request.Request(
-                ENDPOINT,
+                endpoint,
                 headers={
                     "Accept": "application/json",
                     "User-Agent": (
@@ -37,33 +48,39 @@ def fetch_with_retries():
                 return json.load(response)
         except Exception as error:
             last_error = error
-            if attempt < 3:
+            if attempt < 2:
                 time.sleep(2 * (attempt + 1))
     raise last_error
 
 
-try:
-    payload = fetch_with_retries()
-    symbols = {
-        symbol
-        for symbol, item in payload.items()
-        if isinstance(item, dict)
-        and isinstance(item.get("Buying"), (int, float))
-        and isinstance(item.get("Selling"), (int, float))
-        and item["Buying"] > 0
-        and item["Selling"] > 0
-    }
-    missing = sorted(REQUIRED - symbols)
-    if missing:
-        raise ValueError(f"Gerekli altın sembolleri eksik: {', '.join(missing)}")
-
-    updated_at = datetime.datetime.strptime(
+def validate(payload):
+    for name, aliases in REQUIRED.items():
+        found = False
+        for alias in aliases:
+            item = payload.get(alias)
+            if not isinstance(item, dict):
+                continue
+            buying = number(item.get("Buying", item.get("Alış")))
+            selling = number(item.get("Selling", item.get("Satış")))
+            found = found or (buying > 0 and selling > 0)
+        if not found:
+            raise ValueError(f"Geçerli fiyat bulunamadı: {name}")
+    return datetime.datetime.strptime(
         payload["Update_Date"], "%Y-%m-%d %H:%M:%S"
     )
-    print(
-        f"Truncgil Finans doğrulandı: {len(REQUIRED)} altın türü, "
-        f"kaynak zamanı {updated_at.isoformat()}+03:00."
-    )
-except Exception as error:
-    print(f"::error::Anahtarsız fiyat kaynağı doğrulanamadı: {error}")
-    raise SystemExit(1) from error
+
+
+errors = []
+for endpoint in ENDPOINTS:
+    try:
+        updated_at = validate(fetch_with_retries(endpoint))
+        print(
+            f"Truncgil Finans doğrulandı ({endpoint}): 8 altın türü, "
+            f"kaynak zamanı {updated_at.isoformat()}+03:00."
+        )
+        break
+    except Exception as error:
+        errors.append(f"{endpoint} → {error}")
+else:
+    print("::error::Anahtarsız fiyat kaynakları doğrulanamadı: " + " | ".join(errors))
+    raise SystemExit(1)

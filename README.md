@@ -44,7 +44,7 @@ Testler; Türkçe fiyat biçimi çözümleme, portföy/kâr-zarar matematiği, s
 
 ## Fiyat kaynağı
 
-Birincil kaynak, API anahtarı gerektirmeyen `https://finans.truncgil.com/v4/today.json` servisidir. Gram, çeyrek, yarım, tam, Cumhuriyet ve 22/18/14 ayar fiyatları tek yanıttan alınır. Uygulama, kaynağın `Update_Date` alanındaki gerçek güncelleme zamanını Türkiye saat dilimiyle gösterir.
+Birincil kaynak, API anahtarı gerektirmeyen `https://finans.truncgil.com/today.json` ve `https://finans.truncgil.com/v4/today.json` servisleridir. Gram, çeyrek, yarım, tam, Cumhuriyet ve 22/18/14 ayar fiyatları tek yanıttan alınır. Uygulama, kaynağın `Update_Date` alanındaki gerçek güncelleme zamanını Türkiye saat dilimiyle gösterir.
 
 Truncgil'e erişilemezse `https://api.genelpara.com/json/?list=altin` yedek kaynak olarak denenir. Her iki servis de yanıt vermezse uygulama bunu gizlemez; “Örnek fiyat” etiketi gösterilir. Fiyat ekranında aktif kaynak görüntülenir. Deneme API'si veya derleme sırasında anahtar tanımlama zorunluluğu yoktur.
 

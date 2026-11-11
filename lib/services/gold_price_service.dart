@@ -14,17 +14,20 @@ abstract interface class PriceProvider {
 class GoldPriceService implements PriceProvider {
   GoldPriceService({http.Client? client}) : _client = client ?? http.Client();
 
-  static const primaryEndpoint = 'https://finans.truncgil.com/v4/today.json';
+  static const truncgilEndpoints = [
+    'https://finans.truncgil.com/today.json',
+    'https://finans.truncgil.com/v4/today.json',
+  ];
   static const fallbackEndpoint = 'https://api.genelpara.com/json/?list=altin';
-  static const _truncgilSymbols = <GoldType, String>{
-    GoldType.gram: 'GRA',
-    GoldType.quarter: 'CEYREKALTIN',
-    GoldType.half: 'YARIMALTIN',
-    GoldType.full: 'TAMALTIN',
-    GoldType.republic: 'CUMHURIYETALTINI',
-    GoldType.bracelet22: 'YIA',
-    GoldType.gold18: '18AYARALTIN',
-    GoldType.gold14: '14AYARALTIN',
+  static const _truncgilSymbols = <GoldType, List<String>>{
+    GoldType.gram: ['gram-altin', 'GRA'],
+    GoldType.quarter: ['ceyrek-altin', 'CEYREKALTIN'],
+    GoldType.half: ['yarim-altin', 'YARIMALTIN'],
+    GoldType.full: ['tam-altin', 'TAMALTIN'],
+    GoldType.republic: ['cumhuriyet-altini', 'CUMHURIYETALTINI'],
+    GoldType.bracelet22: ['22-ayar-bilezik', 'YIA'],
+    GoldType.gold18: ['18-ayar-altin', '18AYARALTIN'],
+    GoldType.gold14: ['14-ayar-altin', '14AYARALTIN'],
   };
 
   final http.Client _client;
@@ -39,20 +42,24 @@ class GoldPriceService implements PriceProvider {
 
   @override
   Future<Map<GoldType, GoldQuote>> fetchQuotes() async {
-    try {
-      final decoded = await _getJson(primaryEndpoint);
-      if (decoded is! Map<String, dynamic>) {
-        throw const FormatException('Beklenmeyen Truncgil yanıtı.');
+    for (final endpoint in truncgilEndpoints) {
+      try {
+        final decoded = await _getJson(endpoint);
+        if (decoded is! Map<String, dynamic>) {
+          throw const FormatException('Beklenmeyen Truncgil yanıtı.');
+        }
+        final quotes = parseTruncgilResponse(decoded);
+        if (quotes.length < GoldType.values.length) {
+          throw const FormatException(
+            'Truncgil bazı altın fiyatlarını göndermedi.',
+          );
+        }
+        _sourceName = 'Truncgil Finans';
+        _lastUpdatedAt = parseTruncgilUpdatedAt(decoded['Update_Date']);
+        return quotes;
+      } on Object {
+        // Diğer Truncgil sürümünü ve ardından yedek servisi dene.
       }
-      final quotes = parseTruncgilResponse(decoded);
-      if (quotes.length < GoldType.values.length) {
-        throw const FormatException('Truncgil bazı altın fiyatlarını göndermedi.');
-      }
-      _sourceName = 'Truncgil Finans';
-      _lastUpdatedAt = parseTruncgilUpdatedAt(decoded['Update_Date']);
-      return quotes;
-    } on Object {
-      // Ana kaynak erişilemezse anahtarsız yedek servisi dene.
     }
 
     final decoded = await _getJson(fallbackEndpoint);
@@ -98,17 +105,20 @@ class GoldPriceService implements PriceProvider {
   ) {
     final result = <GoldType, GoldQuote>{};
     for (final entry in _truncgilSymbols.entries) {
-      final data = json[entry.value];
-      if (data is! Map) continue;
-      final buy = parseApiNumber(data['Buying']);
-      final sell = parseApiNumber(data['Selling']);
-      if (buy == null || sell == null || buy <= 0 || sell <= 0) continue;
-      result[entry.key] = GoldQuote(
-        type: entry.key,
-        buy: buy,
-        sell: sell,
-        changePercent: parseApiNumber(data['Change']),
-      );
+      for (final symbol in entry.value) {
+        final data = json[symbol];
+        if (data is! Map) continue;
+        final buy = parseApiNumber(data['Buying'] ?? data['Alış']);
+        final sell = parseApiNumber(data['Selling'] ?? data['Satış']);
+        if (buy == null || sell == null || buy <= 0 || sell <= 0) continue;
+        result[entry.key] = GoldQuote(
+          type: entry.key,
+          buy: buy,
+          sell: sell,
+          changePercent: parseApiNumber(data['Change'] ?? data['Değişim']),
+        );
+        break;
+      }
     }
     return result;
   }

@@ -39,6 +39,18 @@ void main() {
     expect(quotes[GoldType.gold14]!.sell, 4701.34);
   });
 
+  test('Truncgil klasik today.json Türkçe alanlarını da destekler', () {
+    final quotes = GoldPriceService.parseTruncgilResponse({
+      'gram-altin': {'Alış': '6.436,43', 'Satış': '6.437,34', 'Değişim': '%0,01'},
+      'ceyrek-altin': {'Alış': '10.484,00', 'Satış': '10.569,00'},
+    });
+
+    expect(quotes[GoldType.gram]!.buy, 6436.43);
+    expect(quotes[GoldType.gram]!.sell, 6437.34);
+    expect(quotes[GoldType.gram]!.changePercent, 0.01);
+    expect(quotes[GoldType.quarter]!.sell, 10569);
+  });
+
   test('Truncgil kaynak güncelleme zamanını Türkiye saat dilimiyle okur', () {
     final date = GoldPriceService.parseTruncgilUpdatedAt(
       '2026-11-12 00:19:01',
