@@ -14,8 +14,42 @@ void main() {
     });
   });
 
-  test('servis yanıtındaki bilinen altın türlerini dönüştürür', () {
-    final quotes = GoldPriceService.parseResponse({
+  test('Truncgil v4 yanıtındaki bütün altın türlerini dönüştürür', () {
+    final quotes = GoldPriceService.parseTruncgilResponse({
+      'GRA': {'Buying': 6435.07, 'Selling': 6435.96, 'Change': -0.01},
+      'CEYREKALTIN': {'Buying': 10482, 'Selling': 10567, 'Change': 0.2},
+      'YARIMALTIN': {'Buying': 20989, 'Selling': 21127},
+      'TAMALTIN': {'Buying': 41850, 'Selling': 42098},
+      'CUMHURIYETALTINI': {'Buying': 42977, 'Selling': 43223},
+      'YIA': {'Buying': 5857, 'Selling': 6055.79},
+      '18AYARALTIN': {'Buying': 4428, 'Selling': 5170},
+      '14AYARALTIN': {'Buying': 3515.54, 'Selling': 4701.34},
+    });
+
+    expect(quotes.length, GoldType.values.length);
+    expect(quotes[GoldType.gram]!.buy, 6435.07);
+    expect(quotes[GoldType.gram]!.sell, 6435.96);
+    expect(quotes[GoldType.gram]!.changePercent, -0.01);
+    expect(quotes[GoldType.quarter]!.sell, 10567);
+    expect(quotes[GoldType.half]!.sell, 21127);
+    expect(quotes[GoldType.full]!.sell, 42098);
+    expect(quotes[GoldType.republic]!.sell, 43223);
+    expect(quotes[GoldType.bracelet22]!.sell, 6055.79);
+    expect(quotes[GoldType.gold18]!.sell, 5170);
+    expect(quotes[GoldType.gold14]!.sell, 4701.34);
+  });
+
+  test('Truncgil kaynak güncelleme zamanını Türkiye saat dilimiyle okur', () {
+    final date = GoldPriceService.parseTruncgilUpdatedAt(
+      '2026-11-12 00:19:01',
+    );
+    expect(date, isNotNull);
+    expect(date!.toUtc().toIso8601String(), '2026-11-11T21:19:01.000Z');
+    expect(GoldPriceService.parseTruncgilUpdatedAt(null), isNull);
+  });
+
+  test('Genel Para yedek yanıtındaki bilinen türleri dönüştürür', () {
+    final quotes = GoldPriceService.parseGenelParaResponse({
       'GA': {'alis': '5.900,10', 'satis': '5.950,20', 'degisim': '%0,35'},
       'C': {'alis': '9.500,00', 'satis': '9.650,00', 'degisim': '-0,20'},
       'bilinmeyen': {'alis': '1', 'satis': '2'},
@@ -28,41 +62,11 @@ void main() {
     expect(quotes[GoldType.quarter]!.changePercent, -0.20);
   });
 
-  test('Altın API veri paketini uygulama türlerine dönüştürür', () {
-    final quotes = GoldPriceService.parseAltinApiResponse({
-      'stale': false,
-      'data': [
-        {'symbol': 'ALTIN', 'bid': 6611.16, 'ask': 6639.34},
-        {'symbol': 'CEYREK_YENI', 'bid': 10800.0, 'ask': 11000.0},
-        {'symbol': 'YARIM_YENI', 'bid': 21600.0, 'ask': 22000.0},
-        {'symbol': 'TEK_YENI', 'bid': 43200.0, 'ask': 44000.0},
-        {'symbol': 'ATA_YENI', 'bid': 47000.0, 'ask': 48000.0},
-        {'symbol': 'AYAR22', 'bid': 6000.0, 'ask': 6150.0},
-        {'symbol': 'AYAR14', 'bid': 3800.0, 'ask': 3950.0},
-      ],
-    });
-
-    expect(quotes[GoldType.gram]!.buy, 6611.16);
-    expect(quotes[GoldType.gram]!.sell, 6639.34);
-    expect(quotes[GoldType.quarter]!.sell, 11000);
-    expect(quotes[GoldType.half]!.sell, 22000);
-    expect(quotes[GoldType.full]!.sell, 44000);
-    expect(quotes[GoldType.republic]!.sell, 48000);
-    expect(quotes[GoldType.bracelet22]!.sell, 6150);
-    expect(quotes[GoldType.gold14]!.sell, 3950);
-  });
-
-  test('Altın API verisi eskiyse canlı fiyat olarak kabul etmez', () {
-    expect(
-      () => GoldPriceService.parseAltinApiResponse({'stale': true, 'data': []}),
-      throwsFormatException,
-    );
-  });
-
-  test('eksik veya geçersiz fiyatı olan türü atlar', () {
-    final quotes = GoldPriceService.parseResponse({
-      'GA': {'alis': 'hatalı', 'satis': '5.950,20'},
-      'C': {'alis': '9.500,00'},
+  test('eksik, sıfır veya geçersiz fiyatı olan türü atlar', () {
+    final quotes = GoldPriceService.parseTruncgilResponse({
+      'GRA': {'Buying': 'hatalı', 'Selling': 6435.96},
+      'CEYREKALTIN': {'Buying': 0, 'Selling': 10567},
+      'YARIMALTIN': {'Buying': 20989},
     });
     expect(quotes, isEmpty);
   });

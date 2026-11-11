@@ -52,7 +52,7 @@ class PortfolioController extends ChangeNotifier {
       _market = MarketSnapshot(
         quotes: quotes,
         isLive: true,
-        updatedAt: DateTime.now(),
+        updatedAt: _priceProvider.lastUpdatedAt ?? DateTime.now(),
         source: _priceProvider.sourceName,
       );
     } on Object {

@@ -44,8 +44,8 @@ Testler; Türkçe fiyat biçimi çözümleme, portföy/kâr-zarar matematiği, s
 
 ## Fiyat kaynağı
 
-Birincil kaynaklar `https://altinapi.com/api/v1/prices` ve aynı anahtar/yanıt biçimini kullanan `https://haremapi.tr/api/v1/prices` servisleridir. Uygulama erişilebilir olanı otomatik seçer. API anahtarı derleme sırasında `--dart-define=ALTINAPI_KEY=...` ile verilir ve `x-api-key` başlığıyla gönderilir. Anahtar Git deposunda tutulmaz.
+Birincil kaynak, API anahtarı gerektirmeyen `https://finans.truncgil.com/v4/today.json` servisidir. Gram, çeyrek, yarım, tam, Cumhuriyet ve 22/18/14 ayar fiyatları tek yanıttan alınır. Uygulama, kaynağın `Update_Date` alanındaki gerçek güncelleme zamanını Türkiye saat dilimiyle gösterir.
 
-Altın API'ye erişilemezse `https://api.genelpara.com/json/?list=altin` yedek kaynak olarak denenir. Her iki servis de yanıt vermezse uygulama bunu gizlemez; “Örnek fiyat” etiketi gösterilir. Fiyat ekranında aktif kaynak görüntülenir.
+Truncgil'e erişilemezse `https://api.genelpara.com/json/?list=altin` yedek kaynak olarak denenir. Her iki servis de yanıt vermezse uygulama bunu gizlemez; “Örnek fiyat” etiketi gösterilir. Fiyat ekranında aktif kaynak görüntülenir. Deneme API'si veya derleme sırasında anahtar tanımlama zorunluluğu yoktur.
 
-> Test APK'sına derleme sırasında eklenen anahtarlar deneyimli kullanıcılar tarafından çıkarılabilir. Herkese açık üretim sürümünde anahtar bir backend proxy arkasında tutulmalıdır. Sağlayıcının kullanım koşulları ve erişilebilirliği ayrıca değerlendirilmelidir.
+> Fiyatlar bilgilendirme amaçlıdır ve servislerin erişilebilirliği değişebilir. Üretim kullanımında sağlayıcıların kullanım koşulları değerlendirilmelidir.

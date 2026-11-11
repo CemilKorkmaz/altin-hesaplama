@@ -7,134 +7,114 @@ import '../models/gold_asset.dart';
 
 abstract interface class PriceProvider {
   String get sourceName;
+  DateTime? get lastUpdatedAt;
   Future<Map<GoldType, GoldQuote>> fetchQuotes();
 }
 
 class GoldPriceService implements PriceProvider {
-  GoldPriceService({http.Client? client, String? apiKey})
-      : _client = client ?? http.Client(),
-        _apiKey = apiKey ??
-            const String.fromEnvironment('ALTINAPI_KEY', defaultValue: '');
+  GoldPriceService({http.Client? client}) : _client = client ?? http.Client();
 
-  static const altinApiEndpoints = [
-    'https://altinapi.com/api/v1/prices',
-    'https://haremapi.tr/api/v1/prices',
-  ];
+  static const primaryEndpoint = 'https://finans.truncgil.com/v4/today.json';
   static const fallbackEndpoint = 'https://api.genelpara.com/json/?list=altin';
-  static const _altinApiSymbols = <GoldType, List<String>>{
-    GoldType.gram: ['ALTIN'],
-    GoldType.quarter: ['CEYREK_YENI'],
-    GoldType.half: ['YARIM_YENI'],
-    GoldType.full: ['TEK_YENI', 'TAM_YENI'],
-    GoldType.republic: ['ATA_YENI', 'CUMHURIYET_YENI', 'CUMHURIYET'],
-    GoldType.bracelet22: ['AYAR22'],
-    GoldType.gold18: ['AYAR18'],
-    GoldType.gold14: ['AYAR14'],
+  static const _truncgilSymbols = <GoldType, String>{
+    GoldType.gram: 'GRA',
+    GoldType.quarter: 'CEYREKALTIN',
+    GoldType.half: 'YARIMALTIN',
+    GoldType.full: 'TAMALTIN',
+    GoldType.republic: 'CUMHURIYETALTINI',
+    GoldType.bracelet22: 'YIA',
+    GoldType.gold18: '18AYARALTIN',
+    GoldType.gold14: '14AYARALTIN',
   };
 
   final http.Client _client;
-  final String _apiKey;
-  String _sourceName = 'Genel Para';
+  String _sourceName = 'Truncgil Finans';
+  DateTime? _lastUpdatedAt;
 
   @override
   String get sourceName => _sourceName;
 
   @override
+  DateTime? get lastUpdatedAt => _lastUpdatedAt;
+
+  @override
   Future<Map<GoldType, GoldQuote>> fetchQuotes() async {
-    if (_apiKey.isNotEmpty) {
-      for (final endpoint in altinApiEndpoints) {
-        try {
-          final response = await _client
-              .get(
-                Uri.parse(endpoint),
-                headers: {
-                  'Accept': 'application/json',
-                  'User-Agent':
-                      'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 '
-                          '(KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36',
-                  'x-api-key': _apiKey,
-                },
-              )
-              .timeout(const Duration(seconds: 12));
-          if (response.statusCode != 200) {
-            throw Exception('Fiyat API’si ${response.statusCode} yanıtı verdi.');
-          }
-          final quotes = parseAltinApiResponse(
-            jsonDecode(utf8.decode(response.bodyBytes)),
-          );
-          if (quotes.isEmpty) {
-            throw const FormatException('Fiyat API’si fiyatları alınamadı.');
-          }
-          _sourceName = endpoint.contains('haremapi.tr')
-              ? 'HaremAPI'
-              : 'Altın API';
-          return quotes;
-        } on Object {
-          // Aynı anahtar biçimini kullanan diğer sağlayıcıyı dene.
-        }
+    try {
+      final decoded = await _getJson(primaryEndpoint);
+      if (decoded is! Map<String, dynamic>) {
+        throw const FormatException('Beklenmeyen Truncgil yanıtı.');
       }
+      final quotes = parseTruncgilResponse(decoded);
+      if (quotes.length < GoldType.values.length) {
+        throw const FormatException('Truncgil bazı altın fiyatlarını göndermedi.');
+      }
+      _sourceName = 'Truncgil Finans';
+      _lastUpdatedAt = parseTruncgilUpdatedAt(decoded['Update_Date']);
+      return quotes;
+    } on Object {
+      // Ana kaynak erişilemezse anahtarsız yedek servisi dene.
     }
 
-    final response = await _client
-        .get(Uri.parse(fallbackEndpoint), headers: {'Accept': 'application/json'})
-        .timeout(const Duration(seconds: 12));
-    if (response.statusCode != 200) {
-      throw Exception('Fiyat servisi ${response.statusCode} yanıtı verdi.');
-    }
-    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+    final decoded = await _getJson(fallbackEndpoint);
     if (decoded is! Map<String, dynamic>) {
-      throw const FormatException('Beklenmeyen fiyat yanıtı.');
+      throw const FormatException('Beklenmeyen yedek fiyat yanıtı.');
     }
-    final quotes = parseResponse(decoded);
+    final quotes = parseGenelParaResponse(decoded);
     if (quotes.isEmpty) {
       throw const FormatException('Fiyatlar şu anda alınamıyor.');
     }
     _sourceName = 'Genel Para';
+    _lastUpdatedAt = null;
     return quotes;
   }
 
-  static Map<GoldType, GoldQuote> parseAltinApiResponse(dynamic decoded) {
-    if (decoded is Map && decoded['stale'] == true) {
-      throw const FormatException('Altın API verisi güncel değil.');
+  Future<dynamic> _getJson(String endpoint) async {
+    final response = await _client
+        .get(Uri.parse(endpoint), headers: {'Accept': 'application/json'})
+        .timeout(const Duration(seconds: 12));
+    if (response.statusCode != 200) {
+      throw Exception('Fiyat servisi ${response.statusCode} yanıtı verdi.');
     }
-    final data = decoded is Map ? decoded['data'] : decoded;
-    if (data is! List) {
-      throw const FormatException('Beklenmeyen Altın API yanıtı.');
-    }
-    final prices = <String, Map>{};
-    for (final item in data) {
-      if (item is Map && item['symbol'] is String) {
-        prices[item['symbol'] as String] = item;
-      }
-    }
+    return jsonDecode(utf8.decode(response.bodyBytes));
+  }
 
+  static Map<GoldType, GoldQuote> parseTruncgilResponse(
+    Map<String, dynamic> json,
+  ) {
     final result = <GoldType, GoldQuote>{};
-    for (final entry in _altinApiSymbols.entries) {
-      for (final symbol in entry.value) {
-        final item = prices[symbol];
-        if (item == null) continue;
-        final buy = parseApiNumber(item['bid']);
-        final sell = parseApiNumber(item['ask']);
-        if (buy == null || sell == null || buy < 0 || sell < 0) continue;
-        result[entry.key] = GoldQuote(
-          type: entry.key,
-          buy: buy,
-          sell: sell,
-        );
-        break;
-      }
+    for (final entry in _truncgilSymbols.entries) {
+      final data = json[entry.value];
+      if (data is! Map) continue;
+      final buy = parseApiNumber(data['Buying']);
+      final sell = parseApiNumber(data['Selling']);
+      if (buy == null || sell == null || buy <= 0 || sell <= 0) continue;
+      result[entry.key] = GoldQuote(
+        type: entry.key,
+        buy: buy,
+        sell: sell,
+        changePercent: parseApiNumber(data['Change']),
+      );
     }
     return result;
   }
 
-  static Map<GoldType, GoldQuote> parseResponse(Map<String, dynamic> json) {
+  static DateTime? parseTruncgilUpdatedAt(dynamic raw) {
+    if (raw is! String || raw.isEmpty) return null;
+    final normalized = raw.trim().replaceFirst(' ', 'T');
+    final local = DateTime.tryParse('${normalized}+03:00');
+    return local?.toLocal();
+  }
+
+  static Map<GoldType, GoldQuote> parseGenelParaResponse(
+    Map<String, dynamic> json,
+  ) {
     final result = <GoldType, GoldQuote>{};
     for (final type in GoldType.values) {
       final data = json[type.apiCode];
       if (data is! Map) continue;
       final buy = parseApiNumber(data['alis']);
       final sell = parseApiNumber(data['satis']);
-      if (buy == null || sell == null || buy < 0 || sell < 0) continue;
+      if (buy == null || sell == null || buy <= 0 || sell <= 0) continue;
       result[type] = GoldQuote(
         type: type,
         buy: buy,

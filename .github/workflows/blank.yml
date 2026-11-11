@@ -6,11 +6,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      altinapi_key:
-        description: Derlemeye aktarılacak Altın API anahtarı
-        required: false
-        type: string
 
 jobs:
   analyze-and-test:
@@ -65,19 +60,10 @@ jobs:
       - name: Android proje dosyalarını doğrula
         run: flutter create --platforms=android --org com.cemilkorkmaz .
       - run: flutter pub get
-      - name: Altın API anahtarını günlüklerde maskele
-        if: env.ALTINAPI_KEY != ''
-        env:
-          ALTINAPI_KEY: ${{ secrets.ALTINAPI_KEY || inputs.altinapi_key }}
-        run: echo "::add-mask::$ALTINAPI_KEY"
-      - name: Altın API canlı bağlantısını doğrula
-        env:
-          ALTINAPI_KEY: ${{ secrets.ALTINAPI_KEY || inputs.altinapi_key }}
-        run: python3 tool/check_altinapi.py
+      - name: Anahtarsız canlı fiyat kaynağını doğrula
+        run: python3 tool/check_price_source.py
       - name: Android release APK derlemesi
-        env:
-          ALTINAPI_KEY: ${{ secrets.ALTINAPI_KEY || inputs.altinapi_key }}
-        run: flutter build apk --release --dart-define=ALTINAPI_KEY=$ALTINAPI_KEY
+        run: flutter build apk --release
       - name: APK dosyasını adlandır
         run: cp build/app/outputs/flutter-apk/app-release.apk altin-defterim.apk
       - uses: actions/upload-artifact@v4
