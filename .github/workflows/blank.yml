@@ -71,7 +71,15 @@ jobs:
       - name: Anahtarsız canlı fiyat kaynağını doğrula
         run: python3 tool/check_price_source.py
       - name: Android release APK derlemesi
-        run: flutter build apk --release
+        run: |
+          set +e
+          flutter build apk --release > android-build.log 2>&1
+          status=$?
+          cat android-build.log
+          if [ $status -ne 0 ]; then
+            python3 -c 'from pathlib import Path; text=Path("android-build.log").read_text(); print("::error::" + text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))'
+          fi
+          exit $status
       - name: APK dosyasını adlandır
         run: cp build/app/outputs/flutter-apk/app-release.apk altin-defterim.apk
       - uses: actions/upload-artifact@v4
