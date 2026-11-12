@@ -37,9 +37,6 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 CupertinoButton(
                   padding: EdgeInsets.zero,
-                  semanticLabel: context.l10n.text(
-                    settings.isDark ? 'lightMode' : 'darkMode',
-                  ),
                   onPressed: settings.toggleDarkMode,
                   child: Icon(
                     settings.isDark
