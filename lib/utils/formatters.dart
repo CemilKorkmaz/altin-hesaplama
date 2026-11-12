@@ -33,8 +33,14 @@ double? parseDecimal(String input) {
   var normalized = input.trim().replaceAll(' ', '');
   if (_locale == 'en_US') {
     normalized = normalized.replaceAll(',', '');
-  } else {
+  } else if (normalized.contains(',')) {
     normalized = normalized.replaceAll('.', '').replaceAll(',', '.');
+  } else {
+    final parts = normalized.split('.');
+    if (parts.length > 2 ||
+        (parts.length == 2 && parts.last.length == 3)) {
+      normalized = normalized.replaceAll('.', '');
+    }
   }
   return double.tryParse(normalized);
 }
