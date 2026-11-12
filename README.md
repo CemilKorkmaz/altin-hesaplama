@@ -11,6 +11,9 @@ iOS ve Android için Flutter ile geliştirilen altın portföyü takip ve satı�
 - Satış miktarı ve fiyatıyla gelir, ayrılan maliyet, kâr/zarar ve kalan miktar simülasyonu
 - Alışların `shared_preferences` ile yalnızca cihazda saklanması
 - Bağlantı yokken açıkça etiketlenen örnek fiyatlar
+- Cihazda saklanan Türkçe/İngilizce dil seçimi
+- Tek dokunuşla açılıp kapanan kalıcı koyu tema
+- Özel Android adaptive icon ve iOS uygulama simgesi
 
 > Uygulama gerçek alım/satım yapmaz. Satış simülasyonu kayıtları değiştirmez. Fiyatlar bilgilendirme amaçlıdır; işlem fiyatları kuruma göre değişebilir.
 
@@ -23,7 +26,23 @@ flutter pub get
 flutter run
 ```
 
-iOS için macOS ve Xcode gerekir. Android için Android Studio/SDK kullanılabilir.
+iOS için macOS ve Xcode gerekir. Android için Android Studio/SDK kullanılabilir. Android 7.0 (API 24) ve üzeri desteklenir.
+
+Android kurulum dosyası üretmek için:
+
+```sh
+flutter build apk --release
+```
+
+APK, `build/app/outputs/flutter-apk/app-release.apk` konumunda oluşur.
+
+## Google Play
+
+Sürüm `1.1.0+2` için mağaza görselleri `store/`, gizlilik politikası `PRIVACY_POLICY.md` ve yayınlama kontrol listesi `store/google-play-checklist.md` içindedir. Kendi upload key'inizi `android/key.properties` ile tanımladıktan sonra imzalı AAB üretmek için:
+
+```sh
+bash tool/build_play_release.sh
+```
 
 ## Test ve analiz
 
@@ -36,4 +55,8 @@ Testler; Türkçe fiyat biçimi çözümleme, portföy/kâr-zarar matematiği, s
 
 ## Fiyat kaynağı
 
-`https://api.genelpara.com/json/?list=altin` kullanılır. Servis yanıt vermezse uygulama bunu gizlemez; “Örnek fiyat” etiketi gösterilir. Üretim kullanımında fiyat sağlayıcısının kullanım koşulları ve erişilebilirliği ayrıca değerlendirilmelidir.
+Birincil kaynak, API anahtarı gerektirmeyen `https://finans.truncgil.com/today.json` ve `https://finans.truncgil.com/v4/today.json` servisleridir. Gram, çeyrek, yarım, tam, Cumhuriyet ve 22/18/14 ayar fiyatları tek yanıttan alınır. Uygulama, kaynağın `Update_Date` alanındaki gerçek güncelleme zamanını Türkiye saat dilimiyle gösterir.
+
+Truncgil'e erişilemezse `https://api.genelpara.com/json/?list=altin` yedek kaynak olarak denenir. Her iki servis de yanıt vermezse uygulama bunu gizlemez; “Örnek fiyat” etiketi gösterilir. Fiyat ekranında aktif kaynak görüntülenir. Deneme API'si veya derleme sırasında anahtar tanımlama zorunluluğu yoktur.
+
+> Fiyatlar bilgilendirme amaçlıdır ve servislerin erişilebilirliği değişebilir. Üretim kullanımında sağlayıcıların kullanım koşulları değerlendirilmelidir.

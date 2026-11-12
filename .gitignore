@@ -22,3 +22,13 @@ ios/Pods/
 ios/.symlinks/
 ios/Flutter/Flutter.podspec
 ios/Flutter/flutter_export_environment.sh
+
+# Release signing and generated store packages
+android/key.properties
+*.jks
+*.keystore
+store/*.aab
+store/*.apk
+
+# Python tooling
+__pycache__/

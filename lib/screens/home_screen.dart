@@ -1,17 +1,20 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 
 import '../app.dart';
+import '../l10n/app_localizations.dart';
 import '../models/gold_asset.dart';
 import '../models/purchase.dart';
 import '../state/portfolio_controller.dart';
+import '../state/settings_controller.dart';
 import '../utils/formatters.dart';
 import '../widgets/common.dart';
 import 'add_purchase_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key, required this.controller});
+  const HomeScreen({super.key, required this.controller, required this.settings});
 
   final PortfolioController controller;
+  final SettingsController settings;
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +26,32 @@ class HomeScreen extends StatelessWidget {
         slivers: [
           CupertinoSliverNavigationBar(
             largeTitle: const Text('Altın Defterim'),
-            trailing: CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () => openAddPurchase(context, controller),
-              child: const Icon(CupertinoIcons.add_circled_solid, size: 28),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () => _selectLanguage(context),
+                  child: const Icon(CupertinoIcons.globe, size: 23),
+                ),
+                const SizedBox(width: 12),
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: settings.toggleDarkMode,
+                  child: Icon(
+                    settings.isDark
+                        ? CupertinoIcons.sun_max_fill
+                        : CupertinoIcons.moon_fill,
+                    size: 23,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () => openAddPurchase(context, controller),
+                  child: const Icon(CupertinoIcons.add_circled_solid, size: 27),
+                ),
+              ],
             ),
           ),
           CupertinoSliverRefreshControl(onRefresh: controller.refreshPrices),
@@ -39,8 +64,8 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Text(
                       controller.market.updatedAt == null
-                          ? 'Portföy özeti'
-                          : 'Güncelleme ${formatTime(controller.market.updatedAt!)}',
+                          ? context.l10n.text('portfolioSummary')
+                          : '${context.l10n.text('updatedAt')} ${formatTime(controller.market.updatedAt!)}',
                       style: const TextStyle(fontSize: 13, color: CupertinoColors.systemGrey),
                     ),
                     PriceStatus(isLive: controller.market.isLive, compact: true),
@@ -56,13 +81,17 @@ class HomeScreen extends StatelessWidget {
                 if (!controller.market.isLive) ...[
                   const SizedBox(height: 12),
                   Text(
-                    controller.market.message ?? '',
+                    context.l10n.text(
+                      controller.market.updatedAt == null
+                          ? 'offlinePrices'
+                          : 'stalePrices',
+                    ),
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 12, color: CupertinoColors.systemGrey),
                   ),
                 ],
                 const SizedBox(height: 26),
-                const SectionHeading('Varlıklarım'),
+                SectionHeading(context.l10n.text('assets')),
                 const SizedBox(height: 12),
                 if (portfolio.purchases.isEmpty)
                   _EmptyPortfolio(onAdd: () => openAddPurchase(context, controller))
@@ -81,7 +110,7 @@ class HomeScreen extends StatelessWidget {
                           )),
                 if (portfolio.purchases.isNotEmpty) ...[
                   const SizedBox(height: 18),
-                  const SectionHeading('Alış Geçmişi'),
+                  SectionHeading(context.l10n.text('purchaseHistory')),
                   const SizedBox(height: 12),
                   ...portfolio.purchases.map((purchase) => Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -99,21 +128,50 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  void _selectLanguage(BuildContext context) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (sheetContext) => CupertinoActionSheet(
+        title: Text(context.l10n.text('selectLanguage')),
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              settings.setLocale(const Locale('tr'));
+              Navigator.pop(sheetContext);
+            },
+            child: const Text('Türkçe'),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              settings.setLocale(const Locale('en'));
+              Navigator.pop(sheetContext);
+            },
+            child: const Text('English'),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () => Navigator.pop(sheetContext),
+          child: Text(context.l10n.text('cancel')),
+        ),
+      ),
+    );
+  }
+
   Future<void> _confirmDelete(BuildContext context, Purchase purchase) async {
     final confirmed = await showCupertinoDialog<bool>(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: const Text('Alış kaydı silinsin mi?'),
-        content: Text('${purchase.type.label} kaydı portföyden kaldırılacak.'),
+        title: Text(context.l10n.text('deletePurchaseTitle')),
+        content: Text(context.l10n.text('deletePurchaseBody')),
         actions: [
           CupertinoDialogAction(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Vazgeç'),
+            child: Text(context.l10n.text('cancel')),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sil'),
+            child: Text(context.l10n.text('delete')),
           ),
         ],
       ),
@@ -151,18 +209,15 @@ class _PortfolioHero extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(CupertinoIcons.sparkles, color: Color(0xFFE9C979), size: 17),
-              SizedBox(width: 7),
-              Text('TOPLAM DEĞER', style: TextStyle(color: Color(0xFFD8D2C3), fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 0.8)),
+              const Icon(CupertinoIcons.sparkles, color: Color(0xFFE9C979), size: 17),
+              const SizedBox(width: 7),
+              Text(context.l10n.text('totalValue'), style: const TextStyle(color: Color(0xFFD8D2C3), fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 0.8)),
             ],
           ),
           const SizedBox(height: 12),
-          Text(
-            formatCurrency(value),
-            style: const TextStyle(color: CupertinoColors.white, fontSize: 34, fontWeight: FontWeight.w700, letterSpacing: -1),
-          ),
+          Text(formatCurrency(value), style: const TextStyle(color: CupertinoColors.white, fontSize: 34, fontWeight: FontWeight.w700, letterSpacing: -1)),
           const SizedBox(height: 20),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -171,15 +226,17 @@ class _PortfolioHero extends StatelessWidget {
               children: [
                 Icon(positive ? CupertinoIcons.arrow_up_right : CupertinoIcons.arrow_down_right, color: positive ? const Color(0xFF82DDB1) : const Color(0xFFFF9999), size: 20),
                 const SizedBox(width: 7),
-                Text(
-                  '${formatSignedCurrency(profit)}  ·  ${formatPercent(profitPercent)}',
-                  style: TextStyle(color: positive ? const Color(0xFF82DDB1) : const Color(0xFFFF9999), fontWeight: FontWeight.w700),
+                Flexible(
+                  child: Text(
+                    '${formatSignedCurrency(profit)}  ·  ${formatPercent(profitPercent)}',
+                    style: TextStyle(color: positive ? const Color(0xFF82DDB1) : const Color(0xFFFF9999), fontWeight: FontWeight.w700),
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 14),
-          Text('Toplam maliyet  ${formatCurrency(cost)}', style: const TextStyle(color: Color(0xFFBEB8AA), fontSize: 13)),
+          Text('${context.l10n.text('totalCost')}  ${formatCurrency(cost)}', style: const TextStyle(color: Color(0xFFBEB8AA), fontSize: 13)),
         ],
       ),
     );
@@ -210,7 +267,7 @@ class _HoldingCard extends StatelessWidget {
           Container(
             width: 46,
             height: 46,
-            decoration: const BoxDecoration(color: AppColors.goldLight, shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.softGold(context), shape: BoxShape.circle),
             child: const Icon(CupertinoIcons.circle_fill, color: AppColors.gold, size: 22),
           ),
           const SizedBox(width: 12),
@@ -218,9 +275,9 @@ class _HoldingCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(type.label, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                Text(context.l10n.typeLabel(type), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
                 const SizedBox(height: 4),
-                Text('${formatQuantity(quantity)} ${type.unit} · Ort. ${formatCurrency(averageCost)}', style: const TextStyle(fontSize: 12, color: CupertinoColors.systemGrey)),
+                Text('${formatQuantity(quantity)} ${context.l10n.unit(type)} · ${context.l10n.text('average')} ${formatCurrency(averageCost)}', style: const TextStyle(fontSize: 12, color: CupertinoColors.systemGrey)),
               ],
             ),
           ),
@@ -229,7 +286,7 @@ class _HoldingCard extends StatelessWidget {
             children: [
               Text(formatCurrency(value), style: const TextStyle(fontWeight: FontWeight.w700)),
               const SizedBox(height: 4),
-              Text(quote == null ? 'Fiyat yok' : 'Satış ${formatCurrency(quote!.sell)}', style: const TextStyle(fontSize: 11, color: CupertinoColors.systemGrey)),
+              Text(quote == null ? context.l10n.text('noPrice') : '${context.l10n.text('sell')} ${formatCurrency(quote!.sell)}', style: const TextStyle(fontSize: 11, color: CupertinoColors.systemGrey)),
             ],
           ),
         ],
@@ -254,9 +311,9 @@ class _PurchaseRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${formatQuantity(purchase.quantity)} ${purchase.type.unit} ${purchase.type.label}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                Text('${formatQuantity(purchase.quantity)} ${context.l10n.unit(purchase.type)} ${context.l10n.typeLabel(purchase.type)}', style: const TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
-                Text('${formatDate(purchase.purchasedAt)} · ${formatCurrency(purchase.unitPrice)} / ${purchase.type.unit}', style: const TextStyle(fontSize: 12, color: CupertinoColors.systemGrey)),
+                Text('${formatDate(purchase.purchasedAt)} · ${formatCurrency(purchase.unitPrice)} / ${context.l10n.unit(purchase.type)}', style: const TextStyle(fontSize: 12, color: CupertinoColors.systemGrey)),
               ],
             ),
           ),
@@ -285,11 +342,11 @@ class _EmptyPortfolio extends StatelessWidget {
         children: [
           const Icon(CupertinoIcons.plus_square_on_square, size: 38, color: AppColors.gold),
           const SizedBox(height: 12),
-          const Text('İlk altın alışını ekle', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(context.l10n.text('firstPurchase'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 7),
-          const Text('Türü, miktarı ve alış fiyatını gir; piyasa değerini ve kâr/zararını burada takip et.', textAlign: TextAlign.center, style: TextStyle(color: CupertinoColors.systemGrey, height: 1.35)),
+          Text(context.l10n.text('emptyPortfolio'), textAlign: TextAlign.center, style: const TextStyle(color: CupertinoColors.systemGrey, height: 1.35)),
           const SizedBox(height: 18),
-          CupertinoButton.filled(onPressed: onAdd, child: const Text('Alış Ekle')),
+          CupertinoButton.filled(onPressed: onAdd, child: Text(context.l10n.text('addPurchase'))),
         ],
       ),
     );

@@ -41,12 +41,14 @@ class MarketSnapshot {
     required this.isLive,
     this.updatedAt,
     this.message,
+    this.source = 'Genel Para',
   });
 
   final Map<GoldType, GoldQuote> quotes;
   final bool isLive;
   final DateTime? updatedAt;
   final String? message;
+  final String source;
 
   GoldQuote? quoteFor(GoldType type) => quotes[type];
 }

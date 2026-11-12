@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 
 import '../app.dart';
+import '../l10n/app_localizations.dart';
 import '../models/gold_asset.dart';
 import '../state/portfolio_controller.dart';
 import '../utils/formatters.dart';
@@ -43,11 +44,11 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Yeni Alış'),
+        middle: Text(context.l10n.text('newPurchase')),
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () => Navigator.pop(context),
-          child: const Text('Vazgeç'),
+          child: Text(context.l10n.text('cancel')),
         ),
       ),
       child: SafeArea(
@@ -56,37 +57,37 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: AppColors.goldLight, borderRadius: BorderRadius.circular(16)),
-              child: const Row(
+              decoration: BoxDecoration(color: AppColors.softGold(context), borderRadius: BorderRadius.circular(16)),
+              child: Row(
                 children: [
-                  Icon(CupertinoIcons.info_circle_fill, color: AppColors.gold),
-                  SizedBox(width: 10),
-                  Expanded(child: Text('Aldığın ürünün birim fiyatını gir. Kayıtlar yalnızca bu cihazda saklanır.', style: TextStyle(fontSize: 13, height: 1.35))),
+                  const Icon(CupertinoIcons.info_circle_fill, color: AppColors.gold),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(context.l10n.text('purchaseInfo'), style: const TextStyle(fontSize: 13, height: 1.35))),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            SelectField(label: 'Altın türü', value: _type.label, onTap: _selectType),
+            SelectField(label: context.l10n.text('goldType'), value: context.l10n.typeLabel(_type), onTap: _selectType),
             const SizedBox(height: 20),
             NumberField(
-              label: 'Miktar',
+              label: context.l10n.text('quantity'),
               controller: _quantityController,
               placeholder: '0',
-              suffix: _type.unit,
+              suffix: context.l10n.unit(_type),
             ),
             const SizedBox(height: 20),
             NumberField(
-              label: 'Birim alış fiyatı',
+              label: context.l10n.text('unitPurchasePrice'),
               controller: _priceController,
               placeholder: '0,00',
-              suffix: '₺ / ${_type.unit}',
+              suffix: '₺ / ${context.l10n.unit(_type)}',
             ),
             const SizedBox(height: 20),
-            SelectField(label: 'Alış tarihi', value: formatDate(_date), onTap: _selectDate),
+            SelectField(label: context.l10n.text('purchaseDate'), value: formatDate(_date), onTap: _selectDate),
             const SizedBox(height: 28),
             CupertinoButton.filled(
               onPressed: _isSaving ? null : _save,
-              child: _isSaving ? const CupertinoActivityIndicator(color: CupertinoColors.white) : const Text('Portföye Ekle'),
+              child: _isSaving ? const CupertinoActivityIndicator(color: CupertinoColors.white) : Text(context.l10n.text('savePurchase')),
             ),
           ],
         ),
@@ -98,19 +99,19 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (context) => CupertinoActionSheet(
-        title: const Text('Altın türünü seç'),
+        title: Text(context.l10n.text('selectGoldType')),
         actions: GoldType.values
             .map((type) => CupertinoActionSheetAction(
                   onPressed: () {
                     setState(() => _type = type);
                     Navigator.pop(context);
                   },
-                  child: Text(type.label),
+                  child: Text(context.l10n.typeLabel(type)),
                 ))
             .toList(),
         cancelButton: CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Vazgeç'),
+          child: Text(context.l10n.text('cancel')),
         ),
       ),
     );
@@ -130,7 +131,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                 alignment: Alignment.centerRight,
                 child: CupertinoButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Bitti'),
+                  child: Text(context.l10n.text('done')),
                 ),
               ),
               Expanded(
@@ -152,10 +153,10 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     final quantity = parseDecimal(_quantityController.text);
     final price = parseDecimal(_priceController.text);
     if (quantity == null || quantity <= 0) {
-      return showAppMessage(context, 'Miktarı kontrol et', 'Sıfırdan büyük geçerli bir miktar gir.');
+      return showAppMessage(context, context.l10n.text('checkQuantity'), context.l10n.text('validQuantity'));
     }
     if (price == null || price < 0) {
-      return showAppMessage(context, 'Fiyatı kontrol et', 'Geçerli bir birim alış fiyatı gir.');
+      return showAppMessage(context, context.l10n.text('checkPrice'), context.l10n.text('validPurchasePrice'));
     }
     setState(() => _isSaving = true);
     try {
@@ -169,7 +170,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     } on Object {
       if (mounted) {
         setState(() => _isSaving = false);
-        showAppMessage(context, 'Kaydedilemedi', 'Kayıt saklanırken bir sorun oluştu. Tekrar dene.');
+        showAppMessage(context, context.l10n.text('saveFailed'), context.l10n.text('saveFailedBody'));
       }
     }
   }

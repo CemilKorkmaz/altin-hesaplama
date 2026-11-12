@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 
 import '../app.dart';
+import '../l10n/app_localizations.dart';
 
 class SurfaceCard extends StatelessWidget {
   const SurfaceCard({super.key, required this.child, this.padding});
@@ -14,9 +15,9 @@ class SurfaceCard extends StatelessWidget {
       width: double.infinity,
       padding: padding ?? const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: CupertinoColors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE9E6DE)),
+        border: Border.all(color: AppColors.border(context)),
         boxShadow: const [
           BoxShadow(color: Color(0x08000000), blurRadius: 16, offset: Offset(0, 5)),
         ],
@@ -58,7 +59,11 @@ class PriceStatus extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: compact ? 9 : 12, vertical: 7),
       decoration: BoxDecoration(
-        color: isLive ? const Color(0xFFE4F4EB) : AppColors.goldLight,
+        color: isLive
+            ? (CupertinoTheme.brightnessOf(context) == Brightness.dark
+                ? const Color(0xFF244C3B)
+                : const Color(0xFFE4F4EB))
+            : AppColors.softGold(context),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
@@ -74,11 +79,15 @@ class PriceStatus extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            isLive ? 'Canlı piyasa' : 'Örnek fiyat',
+            context.l10n.text(isLive ? 'liveMarket' : 'samplePrice'),
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: isLive ? AppColors.positive : const Color(0xFF80601E),
+              color: isLive
+                  ? (CupertinoTheme.brightnessOf(context) == Brightness.dark
+                      ? const Color(0xFF82DDB1)
+                      : AppColors.positive)
+                  : AppColors.gold,
             ),
           ),
         ],
@@ -97,7 +106,7 @@ Future<void> showAppMessage(BuildContext context, String title, String message) 
         CupertinoDialogAction(
           isDefaultAction: true,
           onPressed: () => Navigator.pop(context),
-          child: const Text('Tamam'),
+          child: Text(context.l10n.text('ok')),
         ),
       ],
     ),
@@ -128,7 +137,7 @@ class SelectField extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F4F0),
+              color: AppColors.field(context),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(

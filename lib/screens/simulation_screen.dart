@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 
 import '../app.dart';
+import '../l10n/app_localizations.dart';
 import '../models/gold_asset.dart';
 import '../models/purchase.dart';
 import '../state/portfolio_controller.dart';
@@ -42,20 +43,20 @@ class _SimulationScreenState extends State<SimulationScreen> {
       child: CustomScrollView(
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         slivers: [
-          const CupertinoSliverNavigationBar(largeTitle: Text('Satış Simülasyonu')),
+          CupertinoSliverNavigationBar(largeTitle: Text(context.l10n.text('saleSimulation'))),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(18, 10, 18, 110),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: AppColors.goldLight, borderRadius: BorderRadius.circular(16)),
-                  child: const Row(
+                  decoration: BoxDecoration(color: AppColors.softGold(context), borderRadius: BorderRadius.circular(16)),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(CupertinoIcons.shield_fill, color: AppColors.gold, size: 21),
-                      SizedBox(width: 10),
-                      Expanded(child: Text('Bu bir deneme aracıdır. Gerçek satış yapılmaz ve portföy kayıtların değiştirilmez.', style: TextStyle(fontSize: 13, height: 1.35))),
+                      const Icon(CupertinoIcons.shield_fill, color: AppColors.gold, size: 21),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(context.l10n.text('simulationInfo'), style: const TextStyle(fontSize: 13, height: 1.35))),
                     ],
                   ),
                 ),
@@ -67,13 +68,13 @@ class _SimulationScreenState extends State<SimulationScreen> {
                       children: [
                         const Icon(CupertinoIcons.arrow_2_squarepath, size: 38, color: AppColors.gold),
                         const SizedBox(height: 12),
-                        const Text('Önce bir alış kaydı ekle', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                        Text(context.l10n.text('addFirstForSale'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                         const SizedBox(height: 8),
-                        const Text('Satış simülasyonu, portföyündeki ortalama maliyeti kullanır.', textAlign: TextAlign.center, style: TextStyle(color: CupertinoColors.systemGrey)),
+                        Text(context.l10n.text('saleUsesAverage'), textAlign: TextAlign.center, style: const TextStyle(color: CupertinoColors.systemGrey)),
                         const SizedBox(height: 16),
                         CupertinoButton.filled(
                           onPressed: () => openAddPurchase(context, widget.controller),
-                          child: const Text('Alış Ekle'),
+                          child: Text(context.l10n.text('addPurchase')),
                         ),
                       ],
                     ),
@@ -84,28 +85,28 @@ class _SimulationScreenState extends State<SimulationScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SelectField(
-                          label: 'Satılacak altın',
-                          value: _type?.label ?? 'Tür seç',
+                          label: context.l10n.text('goldToSell'),
+                          value: _type == null ? context.l10n.text('selectType') : context.l10n.typeLabel(_type!),
                           onTap: () => _selectType(ownedTypes),
                         ),
                         if (_type != null) ...[
                           const SizedBox(height: 8),
                           Text(
-                            'Kullanılabilir: ${formatQuantity(widget.controller.portfolio.quantityOf(_type!))} ${_type!.unit}',
+                            '${context.l10n.text('available')}: ${formatQuantity(widget.controller.portfolio.quantityOf(_type!))} ${context.l10n.unit(_type!)}',
                             style: const TextStyle(fontSize: 12, color: CupertinoColors.systemGrey),
                           ),
                         ],
                         const SizedBox(height: 20),
                         NumberField(
-                          label: 'Satış miktarı',
+                          label: context.l10n.text('saleQuantity'),
                           controller: _quantityController,
                           placeholder: '0',
-                          suffix: _type?.unit ?? 'miktar',
+                          suffix: _type == null ? context.l10n.text('quantity') : context.l10n.unit(_type!),
                           onChanged: (_) => setState(() => _result = null),
                         ),
                         const SizedBox(height: 20),
                         NumberField(
-                          label: 'Birim satış fiyatı',
+                          label: context.l10n.text('unitSalePrice'),
                           controller: _priceController,
                           placeholder: '0,00',
                           suffix: '₺',
@@ -119,14 +120,14 @@ class _SimulationScreenState extends State<SimulationScreen> {
                               padding: EdgeInsets.zero,
                               minimumSize: Size.square(28),
                               onPressed: _useMarketPrice,
-                              child: const Text('Piyasa satış fiyatını kullan', style: TextStyle(fontSize: 12)),
+                              child: Text(context.l10n.text('useMarketPrice'), style: const TextStyle(fontSize: 12)),
                             ),
                           ),
                         ],
                         const SizedBox(height: 18),
                         CupertinoButton.filled(
                           onPressed: _type == null ? null : _calculate,
-                          child: const Text('Simülasyonu Hesapla'),
+                          child: Text(context.l10n.text('calculateSimulation')),
                         ),
                       ],
                     ),
@@ -136,10 +137,10 @@ class _SimulationScreenState extends State<SimulationScreen> {
                     _SaleResult(result: _result!),
                   ],
                   const SizedBox(height: 20),
-                  const Text(
-                    'Maliyet, aynı türdeki tüm alışların ağırlıklı ortalamasıyla hesaplanır. Olası vergi, komisyon ve işçilik farkları dahil değildir.',
+                  Text(
+                    context.l10n.text('costDisclaimer'),
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, height: 1.4, color: CupertinoColors.systemGrey),
+                    style: const TextStyle(fontSize: 12, height: 1.4, color: CupertinoColors.systemGrey),
                   ),
                 ],
               ]),
@@ -154,7 +155,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (context) => CupertinoActionSheet(
-        title: const Text('Satılacak türü seç'),
+        title: Text(context.l10n.text('goldToSell')),
         actions: types
             .map((type) => CupertinoActionSheetAction(
                   onPressed: () {
@@ -165,10 +166,10 @@ class _SimulationScreenState extends State<SimulationScreen> {
                     });
                     Navigator.pop(context);
                   },
-                  child: Text(type.label),
+                  child: Text(context.l10n.typeLabel(type)),
                 ))
             .toList(),
-        cancelButton: CupertinoActionSheetAction(onPressed: () => Navigator.pop(context), child: const Text('Vazgeç')),
+        cancelButton: CupertinoActionSheetAction(onPressed: () => Navigator.pop(context), child: Text(context.l10n.text('cancel'))),
       ),
     );
   }
@@ -176,7 +177,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
   void _useMarketPrice() {
     final quote = widget.controller.market.quoteFor(_type!);
     if (quote == null) {
-      showAppMessage(context, 'Fiyat bulunamadı', 'Bu tür için satış fiyatını elle girebilirsin.');
+      showAppMessage(context, context.l10n.text('priceNotFound'), context.l10n.text('manualPriceHint'));
       return;
     }
     setState(() {
@@ -189,7 +190,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
     final quantity = parseDecimal(_quantityController.text);
     final price = parseDecimal(_priceController.text);
     if (quantity == null || quantity <= 0 || price == null || price < 0) {
-      showAppMessage(context, 'Bilgileri kontrol et', 'Geçerli bir satış miktarı ve birim fiyatı gir.');
+      showAppMessage(context, context.l10n.text('checkFields'), context.l10n.text('validSaleFields'));
       return;
     }
     try {
@@ -199,8 +200,8 @@ class _SimulationScreenState extends State<SimulationScreen> {
         saleUnitPrice: price,
       );
       setState(() => _result = result);
-    } on ArgumentError catch (error) {
-      showAppMessage(context, 'Hesaplanamadı', error.message.toString());
+    } on ArgumentError {
+      showAppMessage(context, context.l10n.text('cannotCalculate'), context.l10n.text('saleTooLarge'));
     }
   }
 }
@@ -217,11 +218,11 @@ class _SaleResult extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Simülasyon Sonucu', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
+          Text(context.l10n.text('simulationResult'), style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
           const SizedBox(height: 18),
-          _ResultRow(label: 'Satış geliri', value: formatCurrency(result.revenue)),
-          _ResultRow(label: 'Ayrılan maliyet', value: formatCurrency(result.allocatedCost)),
-          _ResultRow(label: 'Kalan miktar', value: '${formatQuantity(result.remainingQuantity)} ${result.type.unit}'),
+          _ResultRow(label: context.l10n.text('saleRevenue'), value: formatCurrency(result.revenue)),
+          _ResultRow(label: context.l10n.text('allocatedCost'), value: formatCurrency(result.allocatedCost)),
+          _ResultRow(label: context.l10n.text('remainingQuantity'), value: '${formatQuantity(result.remainingQuantity)} ${context.l10n.unit(result.type)}'),
           const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.all(15),
@@ -232,7 +233,7 @@ class _SaleResult extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(positive ? 'Tahmini kâr' : 'Tahmini zarar', style: TextStyle(fontWeight: FontWeight.w600, color: positive ? AppColors.positive : AppColors.negative)),
+                Text(context.l10n.text(positive ? 'estimatedProfit' : 'estimatedLoss'), style: TextStyle(fontWeight: FontWeight.w600, color: positive ? AppColors.positive : AppColors.negative)),
                 Text(formatSignedCurrency(result.profit), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: positive ? AppColors.positive : AppColors.negative)),
               ],
             ),
