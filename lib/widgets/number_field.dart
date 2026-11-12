@@ -1,6 +1,8 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
 
+import '../app.dart';
+
 class NumberField extends StatelessWidget {
   const NumberField({
     super.key,
@@ -32,7 +34,7 @@ class NumberField extends StatelessWidget {
           inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]'))],
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           decoration: BoxDecoration(
-            color: const Color(0xFFF5F4F0),
+            color: AppColors.field(context),
             borderRadius: BorderRadius.circular(12),
           ),
           suffix: suffix == null

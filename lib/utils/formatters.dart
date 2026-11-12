@@ -1,24 +1,40 @@
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
-final _currency = NumberFormat.currency(
-  locale: 'tr_TR',
-  symbol: '₺',
-  decimalDigits: 2,
-);
-final _quantity = NumberFormat('#,##0.###', 'tr_TR');
-final _percent = NumberFormat('#,##0.00', 'tr_TR');
-final _date = DateFormat('d MMMM y', 'tr_TR');
-final _time = DateFormat('HH:mm', 'tr_TR');
+String _locale = 'tr_TR';
 
-String formatCurrency(double value) => _currency.format(value);
-String formatQuantity(double value) => _quantity.format(value);
-String formatPercent(double value) => '%${_percent.format(value)}';
+void setFormattingLocale(Locale locale) {
+  _locale = locale.languageCode == 'en' ? 'en_US' : 'tr_TR';
+}
+
+String formatCurrency(double value) => NumberFormat.currency(
+      locale: _locale,
+      symbol: '₺',
+      decimalDigits: 2,
+    ).format(value);
+
+String formatQuantity(double value) =>
+    NumberFormat('#,##0.###', _locale).format(value);
+
+String formatPercent(double value) {
+  final formatted = NumberFormat('#,##0.00', _locale).format(value);
+  return _locale == 'en_US' ? '$formatted%' : '%$formatted';
+}
+
 String formatSignedCurrency(double value) =>
     '${value >= 0 ? '+' : '−'}${formatCurrency(value.abs())}';
-String formatDate(DateTime date) => _date.format(date);
-String formatTime(DateTime date) => _time.format(date);
+
+String formatDate(DateTime date) =>
+    DateFormat('d MMMM y', _locale).format(date);
+
+String formatTime(DateTime date) => DateFormat('HH:mm', _locale).format(date);
 
 double? parseDecimal(String input) {
-  final normalized = input.trim().replaceAll(' ', '').replaceAll(',', '.');
+  var normalized = input.trim().replaceAll(' ', '');
+  if (_locale == 'en_US') {
+    normalized = normalized.replaceAll(',', '');
+  } else {
+    normalized = normalized.replaceAll('.', '').replaceAll(',', '.');
+  }
   return double.tryParse(normalized);
 }

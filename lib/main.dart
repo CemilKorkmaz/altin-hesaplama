@@ -5,6 +5,9 @@ import 'app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('tr_TR');
+  await Future.wait([
+    initializeDateFormatting('tr_TR'),
+    initializeDateFormatting('en_US'),
+  ]);
   runApp(const GoldPortfolioApp());
 }

@@ -1,6 +1,7 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
 
 import '../app.dart';
+import '../l10n/app_localizations.dart';
 import '../models/gold_asset.dart';
 import '../state/portfolio_controller.dart';
 import '../utils/formatters.dart';
@@ -19,7 +20,7 @@ class MarketScreen extends StatelessWidget {
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         slivers: [
           CupertinoSliverNavigationBar(
-            largeTitle: const Text('Piyasalar'),
+            largeTitle: Text(context.l10n.text('markets')),
             trailing: controller.isRefreshing
                 ? const CupertinoActivityIndicator()
                 : CupertinoButton(
@@ -38,9 +39,8 @@ class MarketScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        market.updatedAt == null
-                            ? 'Fiyat kaynağı: ${market.source}'
-                            : 'Son güncelleme ${formatTime(market.updatedAt!)}',
+                        '${context.l10n.text('source')}: ${market.source}'
+                        '${market.updatedAt == null ? '' : ' · ${formatTime(market.updatedAt!)}'}',
                         style: const TextStyle(fontSize: 13, color: CupertinoColors.systemGrey),
                       ),
                     ),
@@ -51,17 +51,17 @@ class MarketScreen extends StatelessWidget {
                 if (!market.isLive)
                   Container(
                     padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(color: AppColors.goldLight, borderRadius: BorderRadius.circular(14)),
-                    child: Text(market.message ?? '', style: const TextStyle(fontSize: 13, height: 1.35)),
+                    decoration: BoxDecoration(color: AppColors.softGold(context), borderRadius: BorderRadius.circular(14)),
+                    child: Text(context.l10n.text(market.updatedAt == null ? 'offlinePrices' : 'stalePrices'), style: const TextStyle(fontSize: 13, height: 1.35)),
                   ),
                 const SizedBox(height: 20),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     children: [
-                      Expanded(child: Text('ALTIN TÜRÜ', style: TextStyle(fontSize: 11, color: CupertinoColors.systemGrey, fontWeight: FontWeight.w600))),
-                      SizedBox(width: 75, child: Text('ALIŞ', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, color: CupertinoColors.systemGrey, fontWeight: FontWeight.w600))),
-                      SizedBox(width: 90, child: Text('SATIŞ', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, color: CupertinoColors.systemGrey, fontWeight: FontWeight.w600))),
+                      Expanded(child: Text(context.l10n.text('goldTypeHeader'), style: const TextStyle(fontSize: 11, color: CupertinoColors.systemGrey, fontWeight: FontWeight.w600))),
+                      SizedBox(width: 75, child: Text(context.l10n.text('buy'), textAlign: TextAlign.right, style: const TextStyle(fontSize: 11, color: CupertinoColors.systemGrey, fontWeight: FontWeight.w600))),
+                      SizedBox(width: 90, child: Text(context.l10n.text('sellHeader'), textAlign: TextAlign.right, style: const TextStyle(fontSize: 11, color: CupertinoColors.systemGrey, fontWeight: FontWeight.w600))),
                     ],
                   ),
                 ),
@@ -73,16 +73,16 @@ class MarketScreen extends StatelessWidget {
                       for (var index = 0; index < GoldType.values.length; index++) ...[
                         _MarketRow(type: GoldType.values[index], quote: market.quoteFor(GoldType.values[index])),
                         if (index != GoldType.values.length - 1)
-                          Container(height: 1, margin: const EdgeInsets.symmetric(horizontal: 16), color: const Color(0xFFECEAE4)),
+                          Container(height: 1, margin: const EdgeInsets.symmetric(horizontal: 16), color: AppColors.border(context)),
                       ],
                     ],
                   ),
                 ),
                 const SizedBox(height: 18),
-                const Text(
-                  'Portföy değeri, satış fiyatı üzerinden hesaplanır. Fiyatlar bilgilendirme amaçlıdır; kuyumcu ve banka fiyatları farklılık gösterebilir.',
+                Text(
+                  context.l10n.text('marketDisclaimer'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, height: 1.4, color: CupertinoColors.systemGrey),
+                  style: const TextStyle(fontSize: 12, height: 1.4, color: CupertinoColors.systemGrey),
                 ),
               ]),
             ),
@@ -109,7 +109,7 @@ class _MarketRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(type.label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                Text(context.l10n.typeLabel(type), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                 if (type.unit == 'adet')
                   Text('${formatQuantity(type.gramsPerUnit)} gram', style: const TextStyle(fontSize: 11, color: CupertinoColors.systemGrey)),
               ],

@@ -11,6 +11,9 @@ iOS ve Android için Flutter ile geliştirilen altın portföyü takip ve satı�
 - Satış miktarı ve fiyatıyla gelir, ayrılan maliyet, kâr/zarar ve kalan miktar simülasyonu
 - Alışların `shared_preferences` ile yalnızca cihazda saklanması
 - Bağlantı yokken açıkça etiketlenen örnek fiyatlar
+- Cihazda saklanan Türkçe/İngilizce dil seçimi
+- Tek dokunuşla açılıp kapanan kalıcı koyu tema
+- Özel Android adaptive icon ve iOS uygulama simgesi
 
 > Uygulama gerçek alım/satım yapmaz. Satış simülasyonu kayıtları değiştirmez. Fiyatlar bilgilendirme amaçlıdır; işlem fiyatları kuruma göre değişebilir.
 
@@ -32,6 +35,14 @@ flutter build apk --release
 ```
 
 APK, `build/app/outputs/flutter-apk/app-release.apk` konumunda oluşur.
+
+## Google Play
+
+Sürüm `1.1.0+2` için mağaza görselleri `store/`, gizlilik politikası `PRIVACY_POLICY.md` ve yayınlama kontrol listesi `store/google-play-checklist.md` içindedir. Kendi upload key'inizi `android/key.properties` ile tanımladıktan sonra imzalı AAB üretmek için:
+
+```sh
+bash tool/build_play_release.sh
+```
 
 ## Test ve analiz
 

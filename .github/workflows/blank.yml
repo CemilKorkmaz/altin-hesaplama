@@ -80,6 +80,8 @@ jobs:
             python3 -c 'from pathlib import Path; text=Path("android-build.log").read_text(); print("::error::" + text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))'
           fi
           exit $status
+      - name: Google Play AAB derlemesini doğrula
+        run: flutter build appbundle --release
       - name: APK dosyasını adlandır
         run: cp build/app/outputs/flutter-apk/app-release.apk altin-defterim.apk
       - uses: actions/upload-artifact@v4

@@ -4,9 +4,11 @@ import 'package:altin_hesaplama/models/purchase.dart';
 import 'package:altin_hesaplama/services/gold_price_service.dart';
 import 'package:altin_hesaplama/services/portfolio_store.dart';
 import 'package:altin_hesaplama/state/portfolio_controller.dart';
+import 'package:altin_hesaplama/state/settings_controller.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TestStore implements PurchaseStore {
   final List<Purchase> purchases = [];
@@ -34,7 +36,12 @@ class TestPrices implements PriceProvider {
 }
 
 void main() {
-  setUpAll(() => initializeDateFormatting('tr_TR'));
+  setUpAll(() => Future.wait([
+        initializeDateFormatting('tr_TR'),
+        initializeDateFormatting('en_US'),
+      ]));
+
+  setUp(() => SharedPreferences.setMockInitialValues({}));
 
   testWidgets('alış ekleme ve satış simülasyonu uçtan uca çalışır', (tester) async {
     final controller = PortfolioController(
@@ -90,5 +97,39 @@ void main() {
     expect(find.text('₺1.450,00'), findsOneWidget);
     expect(find.text('₺1.500,00'), findsOneWidget);
     controller.dispose();
+  });
+
+  testWidgets('tek dokunuşla koyu tema ve İngilizce dil seçimi çalışır', (tester) async {
+    final controller = PortfolioController(
+      store: TestStore(),
+      priceProvider: TestPrices(),
+      autoRefresh: false,
+    );
+    final settings = SettingsController();
+    await tester.pumpWidget(
+      GoldPortfolioApp(controller: controller, settings: settings),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(CupertinoIcons.moon_fill));
+    await tester.pumpAndSettle();
+    expect(settings.isDark, isTrue);
+    expect(find.byIcon(CupertinoIcons.sun_max_fill), findsOneWidget);
+    final app = tester.widget<CupertinoApp>(find.byType(CupertinoApp));
+    expect(app.theme?.brightness, Brightness.dark);
+
+    await tester.tap(find.byIcon(CupertinoIcons.globe));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('English'));
+    await tester.pumpAndSettle();
+
+    expect(settings.locale.languageCode, 'en');
+    expect(find.text('Overview'), findsOneWidget);
+    expect(find.text('Add Purchase'), findsOneWidget);
+    final preferences = await SharedPreferences.getInstance();
+    expect(preferences.getBool('settings_dark_mode'), isTrue);
+    expect(preferences.getString('settings_locale'), 'en');
+    controller.dispose();
+    settings.dispose();
   });
 }
