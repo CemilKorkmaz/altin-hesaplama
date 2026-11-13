@@ -8,7 +8,6 @@
 // `store-screenshots` CI işinde üretim yapılır.
 
 import 'dart:io';
-import 'dart:ui' as ui;
 
 import 'package:altin_hesaplama/app.dart';
 import 'package:altin_hesaplama/models/gold_asset.dart';
@@ -19,7 +18,6 @@ import 'package:altin_hesaplama/state/portfolio_controller.dart';
 import 'package:altin_hesaplama/state/settings_controller.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -251,25 +249,18 @@ Future<void> _pumpApp(WidgetTester tester, SettingsController settings) async {
   await _settle(tester);
 }
 
+/// Görüntüyü golden dosyası olarak yazar.
+///
+/// `RenderRepaintBoundary.toImage` sahte saat altında asılı kaldığı için
+/// Flutter'ın kendi golden mekanizması kullanılıyor; `--update-goldens` ile
+/// dosyalar doğrudan `store/screenshots` altına yazılır.
 Future<void> _capture(WidgetTester tester, String fileName) async {
-  debugPrint('yakalanıyor: \$fileName');
-  final boundary = tester.renderObject<RenderRepaintBoundary>(
+  debugPrint('yakalanıyor: $fileName');
+  await expectLater(
     find.byKey(_captureKey),
+    matchesGoldenFile('../$_outputDirectory/$fileName'),
   );
-
-  // Motorun raster iş parçacığı sahte zamanlayıcıda ilerlemediği için
-  // görüntü yakalama gerçek async bölgesinde yapılmalı.
-  final bytes = await tester.runAsync(() async {
-    final ui.Image image = await boundary.toImage(pixelRatio: _devicePixelRatio);
-    final data = await image.toByteData(format: ui.ImageByteFormat.png);
-    image.dispose();
-    return data!.buffer.asUint8List();
-  });
-
-  final directory = Directory(_outputDirectory)..createSync(recursive: true);
-  final file = File('${directory.path}/$fileName');
-  await file.writeAsBytes(bytes!, flush: true);
-  debugPrint('yazıldı: \${file.path} (\${(bytes.length / 1024).round()} KB)');
+  debugPrint('yazıldı: $_outputDirectory/$fileName');
 }
 
 Future<SettingsController> _newSettings() async {

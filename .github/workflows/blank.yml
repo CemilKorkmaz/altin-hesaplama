@@ -129,7 +129,7 @@ jobs:
       - name: Mağaza ekran görüntülerini üret
         run: |
           set +e
-          GENERATE_STORE_SCREENSHOTS=1 flutter test test/store_screenshots_test.dart > shots.log 2>&1
+          GENERATE_STORE_SCREENSHOTS=1 flutter test --update-goldens test/store_screenshots_test.dart > shots.log 2>&1
           status=$?
           tail -120 shots.log
           if [ $status -ne 0 ]; then
