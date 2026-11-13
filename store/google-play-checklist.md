@@ -14,3 +14,5 @@ Teknik paket ve mağaza görselleri hazırdır. Hesaba özel şu adımlar geliş
 10. Play App Signing'i etkinleştirip imzalı AAB'yi yükleyin ve incelemeye gönderin.
 
 **Önemli:** CI'da üretilen APK/AAB test amaçlı debug anahtarıyla imzalanır. Play Console'a yalnızca kendi upload key'inizle yerel olarak ürettiğiniz AAB'yi yükleyin. Upload key ve şifrelerini kaybetmeyin veya paylaşmayın.
+
+**Reklam beyanı:** Şu an uygulama reklam içermiyor; "Reklamlar" beyanı **Hayır** olmalı. İleride reklam eklemek isterseniz sıra: Play Console beyanı **Evet** → gizlilik politikası güncellemesi → veri güvenliği formu → yeni sürüm. Ayrıntılar: `store/adding-ads-later.md`.
