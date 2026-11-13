@@ -221,6 +221,15 @@ File? _cupertinoIconsFont() {
   return null;
 }
 
+
+/// Sonsuz animasyonlu bileşenler `pumpAndSettle` çağrısını kilitleyebildiği için
+/// belirli sayıda kare pompalıyoruz.
+Future<void> _settle(WidgetTester tester, {int frames = 14}) async {
+  for (var i = 0; i < frames; i++) {
+    await tester.pump(const Duration(milliseconds: 80));
+  }
+}
+
 Future<void> _pumpApp(WidgetTester tester, SettingsController settings) async {
   tester.view.devicePixelRatio = _devicePixelRatio;
   tester.view.physicalSize = _physicalSize;
@@ -238,7 +247,7 @@ Future<void> _pumpApp(WidgetTester tester, SettingsController settings) async {
       child: GoldPortfolioApp(controller: controller, settings: settings),
     ),
   );
-  await tester.pumpAndSettle();
+  await _settle(tester);
 }
 
 Future<void> _capture(WidgetTester tester, String fileName) async {
@@ -267,10 +276,10 @@ Future<SettingsController> _newSettings() async {
 Future<void> _revealResult(WidgetTester tester, String title) async {
   final scrollable = find.byType(Scrollable).first;
   await tester.scrollUntilVisible(find.text(title), 220, scrollable: scrollable);
-  await tester.pumpAndSettle();
+  await _settle(tester);
   // Kartın üst kısmı ekranın biraz üstünde kalsın; altındaki satırlar görünsün.
   await tester.drag(scrollable, const Offset(0, 140));
-  await tester.pumpAndSettle();
+  await _settle(tester);
 }
 
 void main() {
@@ -284,67 +293,67 @@ void main() {
   });
 
   group('Play mağaza ekran görüntüleri', () {
-    testWidgets('Türkçe', (tester) async {
+    testWidgets('Türkçe', timeout: const Timeout(Duration(minutes: 4)), (tester) async {
       final settings = await _newSettings();
       await _pumpApp(tester, settings);
       await _capture(tester, 'tr-01-portfoy.png');
 
       await tester.tap(find.text('Piyasalar').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await _capture(tester, 'tr-02-piyasalar.png');
 
       await tester.tap(find.text('Satış Simülasyonu').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await tester.tap(find.text('Tür seç').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await tester.tap(find.text('Çeyrek Altın').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
 
       await tester.enterText(find.byType(CupertinoTextField).first, '2');
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await tester.tap(find.text('Simülasyonu Hesapla').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
 
       await _revealResult(tester, 'Simülasyon Sonucu');
       await _capture(tester, 'tr-03-satis-simulasyonu.png');
 
       await tester.tap(find.text('Özet').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await settings.toggleDarkMode();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await _capture(tester, 'tr-04-gece-modu.png');
     });
 
-    testWidgets('İngilizce', (tester) async {
+    testWidgets('İngilizce', timeout: const Timeout(Duration(minutes: 4)), (tester) async {
       final settings = await _newSettings();
       await _pumpApp(tester, settings);
       await settings.setLocale(const Locale('en'));
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await _capture(tester, 'en-01-portfolio.png');
 
       await tester.tap(find.text('Markets').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await _capture(tester, 'en-02-markets.png');
 
       await tester.tap(find.text('Sale Simulator').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await tester.tap(find.text('Select type').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await tester.tap(find.text('Quarter Gold').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
 
       await tester.enterText(find.byType(CupertinoTextField).first, '2');
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await tester.tap(find.text('Calculate Simulation').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
 
       await _revealResult(tester, 'Simulation Result');
       await _capture(tester, 'en-03-sale-simulation.png');
 
       await tester.tap(find.text('Overview').first);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await settings.toggleDarkMode();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await _capture(tester, 'en-04-dark-mode.png');
     });
   }, skip: !_enabled);
