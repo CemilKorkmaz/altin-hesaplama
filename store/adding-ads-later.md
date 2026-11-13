@@ -45,10 +45,22 @@ Google Sites sayfasını düzenleyip yeniden yayınla. Play'deki URL değişmez.
 - Paylaşım: **Evet** (reklam ağıyla)
 - Veriler aktarımda şifreli mi: **Evet**
 
-### 5. AD_ID izni
-AdMob SDK'sı `com.google.android.gms.permission.AD_ID` iznini otomatik ekler.
-Play Console, yeni sürümü yüklerken "Advertising ID" beyanı ister → **Evet** seç ve
-amacı **Reklam veya pazarlama** olarak işaretle.
+### 5. Reklam Kimliği (AD_ID) beyanı
+
+Play Console → **Uygulama içeriği → Reklam Kimliği**. Bu beyan reklamdan **önce** de doldurulmalıdır;
+boş bırakılırsa Android 13+ hedefleyen sürümler yayınlanamaz.
+
+| Aşama | Beyan | Manifest |
+|---|---|---|
+| Şimdi (reklam yok) | **Hayır** | AD_ID izni yok — doğru durum |
+| Reklam ekledikten sonra | **Evet** (amaç: Reklam veya pazarlama) | AdMob SDK izni kütüphane manifestinden otomatik ekler |
+
+AdMob SDK'sı `com.google.android.gms.permission.AD_ID` iznini kitaplık manifestinde taşır ve
+uygulamanın ana manifestiyle birleştirilir; yani izni elle yazman gerekmez ama **beyanı
+güncellemen gerekir**. Beyan "Hayır" kalırken reklam SDK'sı eklenirse yanlış beyan olur.
+
+> Ters yön de çalışır: beyan "Evet" iken izin yoksa Play, Android 13+ sürümleri **engeller**.
+> Bu yüzden şimdi "Hayır" seçmek seni kilitlemez; reklam eklediğinde "Evet"e çevirirsin.
 
 ### 6. Yaş ve içerik sınıflandırması
 Finans uygulaması + reklam birlikte değerlendirilir. İçerik derecelendirmesi formunu

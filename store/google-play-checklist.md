@@ -15,4 +15,4 @@ Teknik paket ve mağaza görselleri hazırdır. Hesaba özel şu adımlar geliş
 
 **Önemli:** CI'da üretilen APK/AAB test amaçlı debug anahtarıyla imzalanır. Play Console'a yalnızca kendi upload key'inizle yerel olarak ürettiğiniz AAB'yi yükleyin. Upload key ve şifrelerini kaybetmeyin veya paylaşmayın.
 
-**Reklam beyanı:** Şu an uygulama reklam içermiyor; "Reklamlar" beyanı **Hayır** olmalı. İleride reklam eklemek isterseniz sıra: Play Console beyanı **Evet** → gizlilik politikası güncellemesi → veri güvenliği formu → yeni sürüm. Ayrıntılar: `store/adding-ads-later.md`.
+**Reklam beyanı:** Şu an uygulama reklam içermiyor; "Reklamlar" beyanı **Hayır**, "Reklam Kimliği (AD_ID)" beyanı da **Hayır** olmalı. İkisi ayrı formdur; AD_ID beyanı boş bırakılırsa Android 13+ sürümler yayınlanamaz. İleride reklam eklemek isterseniz sıra: Play Console beyanı **Evet** → gizlilik politikası güncellemesi → veri güvenliği formu → yeni sürüm. Ayrıntılar: `store/adding-ads-later.md`.
