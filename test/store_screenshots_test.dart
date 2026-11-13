@@ -27,7 +27,6 @@ const _captureKey = ValueKey<String>('store-capture');
 
 /// 1080x1920 = tam 9:16. Play aralığı 320–3840 px.
 const _physicalSize = Size(1080, 1920);
-const _devicePixelRatio = 2.5;
 
 const _outputDirectory = 'store/screenshots';
 
@@ -141,6 +140,19 @@ class _DemoStore implements PurchaseStore {
 
 /// Test ortamının varsayılan yazı tipi her glifi kutu olarak çizdiği için
 /// gerçek yazı tiplerini Flutter SDK ve pub cache içinden yükler.
+///
+/// Cupertino bileşenleri metni `.SF Pro Text`, `.SF Pro Display`,
+/// `CupertinoSystemText` ve `CupertinoSystemDisplay` aile adlarıyla ister;
+/// hepsine Roboto bağlanıyor. Simgeler için paketin kendi ikon fontu kullanılır.
+const _textFamilies = <String>[
+  '.SF Pro Text',
+  '.SF Pro Display',
+  'CupertinoSystemText',
+  'CupertinoSystemDisplay',
+  'Roboto',
+  'Segoe UI',
+];
+
 Future<void> _loadRealFonts() async {
   final materialFonts = _materialFontsDirectory();
   if (materialFonts != null) {
@@ -156,8 +168,7 @@ Future<void> _loadRealFonts() async {
         .toList();
 
     if (roboto.isNotEmpty) {
-      // Uygulama '.SF Pro Text' ailesini ister; bu aileye Roboto'yu bağlıyoruz.
-      for (final family in const ['.SF Pro Text', 'Roboto']) {
+      for (final family in _textFamilies) {
         final loader = FontLoader(family);
         for (final file in roboto) {
           loader.addFont(_bytes(file));
@@ -166,17 +177,26 @@ Future<void> _loadRealFonts() async {
       }
     }
 
-    final icons = File('${materialFonts.path}/MaterialIcons-Regular.otf');
-    if (icons.existsSync()) {
-      final loader = FontLoader('MaterialIcons')..addFont(_bytes(icons));
+    final materialIcons = File('${materialFonts.path}/MaterialIcons-Regular.otf');
+    if (materialIcons.existsSync()) {
+      final loader = FontLoader('MaterialIcons')..addFont(_bytes(materialIcons));
       await loader.load();
     }
   }
 
-  final cupertinoIcons = _cupertinoIconsFont();
-  if (cupertinoIcons != null) {
-    final loader = FontLoader('CupertinoIcons')..addFont(_bytes(cupertinoIcons));
-    await loader.load();
+  final icons = _iconFont();
+  if (icons != null) {
+    for (final family in const [
+      'CupertinoIcons',
+      'packages/cupertino_ui/CupertinoIcons',
+      'packages/cupertino_icons/CupertinoIcons',
+    ]) {
+      final loader = FontLoader(family)..addFont(_bytes(icons));
+      await loader.load();
+    }
+    debugPrint('ikon fontu: ${icons.path}');
+  } else {
+    debugPrint('UYARI: ikon fontu bulunamadı');
   }
 }
 
@@ -204,33 +224,43 @@ Directory? _materialFontsDirectory() {
   return null;
 }
 
-File? _cupertinoIconsFont() {
+/// pub cache içinden Cupertino ikon fontunu bulur.
+File? _iconFont() {
   final home = Platform.environment['HOME'];
   if (home == null) return null;
   final cache = Directory('$home/.pub-cache/hosted');
   if (!cache.existsSync()) return null;
 
+  final candidates = <File>[];
   for (final host in cache.listSync().whereType<Directory>()) {
     for (final package in host.listSync().whereType<Directory>()) {
-      if (!package.path.contains('cupertino_icons')) continue;
-      final font = File('${package.path}/assets/CupertinoIcons.ttf');
-      if (font.existsSync()) return font;
+      final name = package.path.split(Platform.pathSeparator).last;
+      if (!name.startsWith('cupertino_')) continue;
+      for (final file in package.listSync(recursive: true).whereType<File>()) {
+        final lower = file.path.toLowerCase();
+        if (!lower.endsWith('.ttf') && !lower.endsWith('.otf')) continue;
+        if (lower.contains('cupertino')) candidates.add(file);
+      }
     }
   }
-  return null;
+  if (candidates.isEmpty) return null;
+  candidates.sort((a, b) => a.path.compareTo(b.path));
+  return candidates.first;
 }
 
-
-/// Sonsuz animasyonlu bileşenler `pumpAndSettle` çağrısını kilitleyebildiği için
-/// belirli sayıda kare pompalıyoruz.
 Future<void> _settle(WidgetTester tester, {int frames = 14}) async {
   for (var i = 0; i < frames; i++) {
     await tester.pump(const Duration(milliseconds: 80));
   }
 }
 
+/// Telefon düzeni 432x768 mantıksal pikselde kurulur ve 2.5x ölçeklenerek
+/// 1080x1920'ye oturtulur. Golden yakalama 1:1 çalıştığı için ölçekleme
+/// `FittedBox` ile yapılıyor; metin ve vektörler keskin kalır.
+const _logicalPhone = Size(432, 768);
+
 Future<void> _pumpApp(WidgetTester tester, SettingsController settings) async {
-  tester.view.devicePixelRatio = _devicePixelRatio;
+  tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = _physicalSize;
   addTearDown(tester.view.reset);
 
@@ -243,7 +273,21 @@ Future<void> _pumpApp(WidgetTester tester, SettingsController settings) async {
   await tester.pumpWidget(
     RepaintBoundary(
       key: _captureKey,
-      child: GoldPortfolioApp(controller: controller, settings: settings),
+      child: FittedBox(
+        fit: BoxFit.contain,
+        child: SizedBox(
+          width: _logicalPhone.width,
+          height: _logicalPhone.height,
+          child: MediaQuery(
+            data: const MediaQueryData(
+              size: _logicalPhone,
+              devicePixelRatio: 1,
+              padding: EdgeInsets.only(top: 24),
+            ),
+            child: GoldPortfolioApp(controller: controller, settings: settings),
+          ),
+        ),
+      ),
     ),
   );
   await _settle(tester);

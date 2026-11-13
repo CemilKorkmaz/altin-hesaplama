@@ -140,6 +140,7 @@ jobs:
           exit $status
       - name: Üretilen görselleri doğrula
         run: |
+          grep -E "ikon fontu|UYARI" shots.log || true
           python3 - <<'PY'
           from pathlib import Path
           import struct
@@ -151,7 +152,7 @@ jobs:
               w, h = struct.unpack(">II", data[16:24])
               ratio = w / h
               size_mb = len(data) / 1024 / 1024
-              ok = (max(w, h) <= 3840 and min(w, h) >= 320) and abs(ratio - 9 / 16) < 0.001 and size_mb < 8
+              ok = (max(w, h) <= 3840 and min(w, h) >= 320) and abs(ratio - 9 / 16) < 0.001 and size_mb < 8 and w == 1080 and h == 1920
               print(f"{f.name}: {w}x{h} {size_mb:.2f} MB {'OK' if ok else 'GECERSIZ'}")
               if not ok:
                   raise SystemExit(1)
