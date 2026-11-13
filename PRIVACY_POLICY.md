@@ -1,5 +1,8 @@
 # Altın Defterim — Gizlilik Politikası / Privacy Policy
 
+**Geliştirici / Developer: C&A Digital Ventures**
+**İletişim / Contact: ca.digital.ventures@gmail.com**
+
 **Yürürlük tarihi / Effective date: 12 Kasım 2026 (November 12, 2026)**
 
 ---
@@ -10,7 +13,7 @@
 
 Bu gizlilik politikası, **Altın Defterim** mobil uygulamasının (paket adı: `com.cemilkorkmaz.altin_hesaplama`) kullanıcı verilerini nasıl işlediğini açıklar. Uygulamayı indirerek veya kullanarak bu politikada açıklanan uygulamaları kabul etmiş olursunuz.
 
-Veri sorumlusu: Altın Defterim geliştiricisi. İletişim: **[E-POSTA ADRESİNİZ]**
+Veri sorumlusu: C&A Digital Ventures (Altın Defterim geliştiricisi). İletişim: ca.digital.ventures@gmail.com
 
 ### 2. Cihazınızda saklanan bilgiler
 
@@ -78,7 +81,7 @@ Uygulama 13 yaşın altındaki çocuklara yönelik değildir ve bilerek hiç kim
 
 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve yürürlükte olduğu yerlerde AB Genel Veri Koruma Tüzüğü (GDPR) kapsamında; verilerinize erişme, düzeltme, silme ve işlemeye itiraz etme haklarına sahipsiniz.
 
-Uygulama kişisel verilerinizi geliştiriciye iletmediği ve merkezi bir veri tabanı kullanmadığı için bu hakların tamamını doğrudan cihazınızda kullanabilirsiniz: kayıtları uygulama içinden silebilir, tercihleri değiştirebilir veya uygulamayı kaldırabilirsiniz. Yine de sorularınız için **[E-POSTA ADRESİNİZ]** adresinden bize ulaşabilirsiniz.
+Uygulama kişisel verilerinizi geliştiriciye iletmediği ve merkezi bir veri tabanı kullanmadığı için bu hakların tamamını doğrudan cihazınızda kullanabilirsiniz: kayıtları uygulama içinden silebilir, tercihleri değiştirebilir veya uygulamayı kaldırabilirsiniz. Yine de sorularınız için ca.digital.ventures@gmail.com adresinden bize ulaşabilirsiniz.
 
 ### 9. Veri güvenliği
 
@@ -94,7 +97,7 @@ Politika, uygulamanın yeni sürümleriyle birlikte güncellenebilir. Önemli de
 
 ### 12. İletişim
 
-Gizlilik politikasıyla ilgili soru ve talepleriniz için: **[E-POSTA ADRESİNİZ]**
+Gizlilik politikasıyla ilgili soru ve talepleriniz için: ca.digital.ventures@gmail.com
 
 ---
 
@@ -104,7 +107,7 @@ Gizlilik politikasıyla ilgili soru ve talepleriniz için: **[E-POSTA ADRESİNİ
 
 This privacy policy explains how the **Altın Defterim** mobile application (package name: `com.cemilkorkmaz.altin_hesaplama`) handles user data. By downloading or using the app you agree to the practices described here.
 
-Data controller: the Altın Defterim developer. Contact: **[YOUR EMAIL ADDRESS]**
+Data controller: C&A Digital Ventures (developer of Altın Defterim). Contact: ca.digital.ventures@gmail.com
 
 ### 2. Information stored on your device
 
@@ -172,7 +175,7 @@ The app is not directed to children under 13 and does not knowingly collect pers
 
 Under Turkish Personal Data Protection Law No. 6698 (KVKK) and, where applicable, the EU General Data Protection Regulation (GDPR), you have the right to access, correct and delete your data and to object to its processing.
 
-Because the app never transmits your personal data to the developer and uses no central database, you can exercise all of these rights directly on your device: delete records in the app, change preferences, or uninstall the app. You may still contact us with any questions at **[YOUR EMAIL ADDRESS]**.
+Because the app never transmits your personal data to the developer and uses no central database, you can exercise all of these rights directly on your device: delete records in the app, change preferences, or uninstall the app. You may still contact us with any questions at ca.digital.ventures@gmail.com.
 
 ### 9. Data security
 
@@ -188,4 +191,4 @@ This policy may be updated with new versions of the app. When changes are signif
 
 ### 12. Contact
 
-For questions or requests about this privacy policy: **[YOUR EMAIL ADDRESS]**
+For questions or requests about this privacy policy: ca.digital.ventures@gmail.com

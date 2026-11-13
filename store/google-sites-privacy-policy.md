@@ -10,13 +10,18 @@ Play Console'a girilecek sayfa için hazır dosyalar:
 
 ---
 
-## 1. E-posta adresini doldurun
+## 1. İletişim bilgileri (hazır — değiştirmenize gerek yok)
 
-Metinde toplam 8 yerde **`[E-POSTA ADRESİNİZ]`** ve **`[YOUR EMAIL ADDRESS]`** yazıyor (4 TR + 4 EN). Play Console'a gireceğiniz geliştirici e-postasını buralara yazın.
+Metinlerde iletişim bilgisi olarak artık şunlar yazılı:
 
-> Play, gizlilik politikası sayfasında **iletişim bilgisi** görmek ister. Bu yüzden e-posta zorunlu, boş bırakmayın.
+- **Geliştirici / Data controller:** C&A Digital Ventures
+- **E-posta:** ca.digital.ventures@gmail.com
 
-En hızlı yol: dosyayı açıp metin düzenleyicide "Bul ve Değiştir" ile değiştirmek, sonra kopyalamak.
+Bu bilgiler `PRIVACY_POLICY.md`, `docs/privacy-policy.html` ve `docs/privacy-policy-google-sites.txt`
+dosyalarına işlendi. Kopyala-yapıştır yaparken hiçbir alanı doldurmanız gerekmiyor.
+
+> Play, gizlilik politikası sayfasında görünür bir iletişim bilgisi görmek ister. E-posta sayfada
+> yazılı olduğu için bu şart karşılanıyor.
 
 ---
 
@@ -48,7 +53,7 @@ Başlıklarla tek tek uğraşmak istemiyorsanız:
 2. Google Sites'ta **Ekle → Yerleştir → Kodu yerleştir (Embed code)** seçin.
 3. Kopyaladığınız HTML'i yapıştırın → **Sonraki → Ekle**.
 4. Gömme kutusunu sayfa genişliğine çekin (yükseklik ~3000 px veya "tam boyut").
-5. Önce e-posta yer tutucularını değiştirmeyi unutmayın.
+5. Metinlerde iletişim bilgisi hazır; e-posta değiştirilmiş durumda.
 
 > Not: Google Sites'ta gömülü kod bazen dar bir çerçevede görünür. Play yalnızca içeriğin erişilebilir olmasını ister; görünüm ikincil. En temiz sonuç için Yöntem A (düz metin) önerilir.
 
@@ -95,7 +100,7 @@ Politika ile Play formunun birbiriyle çelişmemesi gerekir. Uygulamanın gerçe
 
 ## 7. Kontrol listesi
 
-- [ ] E-posta adresleri dolduruldu (8 yer: 4 TR + 4 EN)
+- [ ] İletişim bilgisi sayfada görünüyor (C&A Digital Ventures + e-posta)
 - [ ] Site herkese açık yayınlandı
 - [ ] Incognito pencerede açılıyor
 - [ ] URL Play Console > Gizlilik politikası alanına girildi
@@ -110,5 +115,6 @@ Politika ile Play formunun birbiriyle çelişmemesi gerekir. Uygulamanın gerçe
 |---|---|
 | Sayfa "Kuruluşunuzdaki kişiler" görünürlüğünde | **Herkese açık** yapın |
 | Play "URL erişilemiyor" diyor | Site henüz yayınlanmamış veya URL'de yazım hatası var |
-| E-posta alanı boş kalmış | 8 yeri de doldurun |
+| E-posta alanı boş kalmış | `ca.digital.ventures@gmail.com` her iki dilde de görünmeli |
 | TR ve EN bölümü karışmış | `====` çizgisini ayırıcı ile değiştirin |
+| Play "geliştirici adı uyuşmuyor" | Play Console'da geliştirici adı **C&A Digital Ventures** olmalı |
