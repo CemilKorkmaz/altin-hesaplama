@@ -75,7 +75,7 @@ Geliştiricinin erişebileceği bir sunucu verisi olmadığı için geliştirici
 
 ### 7. Çocukların gizliliği
 
-Uygulama 13 yaşın altındaki çocuklara yönelik değildir ve bilerek hiç kimseden kişisel veri toplamaz. Uygulama hiçbir kişisel veri toplamadığı için çocuklardan da veri toplanmaz.
+Uygulama 18 yaşın altındaki çocuklara ve gençlere yönelik değildir ve bilerek hiç kimseden kişisel veri toplamaz. Uygulama hiçbir kişisel veri toplamadığı için çocuklardan ve gençlerden de veri toplanmaz. Uygulama Google Play'de yalnızca 18 yaş ve üstü kullanıcılar için yayınlanır.
 
 ### 8. Haklarınız (KVKK ve GDPR)
 
@@ -169,7 +169,7 @@ Since the developer has no server-side data, you do not need to request deletion
 
 ### 7. Children's privacy
 
-The app is not directed to children under 13 and does not knowingly collect personal data from anyone. Because the app collects no personal data at all, no data is collected from children either.
+The app is not directed to children or teenagers under 18 and does not knowingly collect personal data from anyone. Because the app collects no personal data at all, no data is collected from minors either. The app is published on Google Play for users aged 18 and over only.
 
 ### 8. Your rights (KVKK and GDPR)
 
