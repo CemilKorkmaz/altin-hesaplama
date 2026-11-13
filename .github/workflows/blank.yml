@@ -145,8 +145,8 @@ jobs:
           from pathlib import Path
           import struct
           files = sorted(Path("store/screenshots").glob("*.png"))
-          if len(files) < 8:
-              raise SystemExit(f"Beklenen 8 görsel, bulunan {len(files)}")
+          if len(files) < 10:
+              raise SystemExit(f"Beklenen 10 görsel, bulunan {len(files)}")
           for f in files:
               data = f.read_bytes()
               w, h = struct.unpack(">II", data[16:24])
@@ -163,6 +163,7 @@ jobs:
           path: store/screenshots/*.png
       - name: Görselleri dala işle
         run: |
+          git rm -q --cached --ignore-unmatch 'store/screenshots/*' >/dev/null 2>&1 || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add store/screenshots

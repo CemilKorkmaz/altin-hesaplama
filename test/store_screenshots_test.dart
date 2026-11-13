@@ -319,13 +319,24 @@ Future<SettingsController> _newSettings() async {
   return settings;
 }
 
-/// Sonuç kartını görünür alana getirir.
+/// Sonuç kartını görünür alana getirir ve kartı ekranın alt yarısına yerleştirir.
 Future<void> _revealResult(WidgetTester tester, String title) async {
   final scrollable = find.byType(Scrollable).first;
-  await tester.scrollUntilVisible(find.text(title), 220, scrollable: scrollable);
+  await tester.scrollUntilVisible(find.text(title), 200, scrollable: scrollable);
   await _settle(tester);
-  // Kartın üst kısmı ekranın biraz üstünde kalsın; altındaki satırlar görünsün.
-  await tester.drag(scrollable, const Offset(0, 140));
+}
+
+/// Listenin en altına kaydırır; alt bilgi metni tam görünür olur.
+Future<void> _scrollToBottom(WidgetTester tester) async {
+  final scrollable = find.byType(Scrollable).first;
+  await tester.drag(scrollable, const Offset(0, -2600));
+  await _settle(tester);
+}
+
+/// Sayfanın en üstüne döner.
+Future<void> _scrollToTop(WidgetTester tester) async {
+  final scrollable = find.byType(Scrollable).first;
+  await tester.drag(scrollable, const Offset(0, 2600));
   await _settle(tester);
 }
 
@@ -349,6 +360,7 @@ void main() {
       debugPrint('adım: tr piyasalar');
       await tester.tap(find.text('Piyasalar').first);
       await _settle(tester);
+      await _scrollToBottom(tester);
       await _capture(tester, 'tr-02-piyasalar.png');
 
       debugPrint('adım: tr simülasyon');
@@ -361,17 +373,19 @@ void main() {
 
       await tester.enterText(find.byType(CupertinoTextField).first, '2');
       await _settle(tester);
+      await _scrollToTop(tester);
+      await _capture(tester, 'tr-03-satis-formu.png');
+
       await tester.tap(find.text('Simülasyonu Hesapla').first);
       await _settle(tester);
-
       await _revealResult(tester, 'Simülasyon Sonucu');
-      await _capture(tester, 'tr-03-satis-simulasyonu.png');
+      await _capture(tester, 'tr-04-satis-sonucu.png');
 
       await tester.tap(find.text('Özet').first);
       await _settle(tester);
       await settings.toggleDarkMode();
       await _settle(tester);
-      await _capture(tester, 'tr-04-gece-modu.png');
+      await _capture(tester, 'tr-05-gece-modu.png');
       debugPrint('tr tamam');
     });
 
@@ -386,6 +400,7 @@ void main() {
       debugPrint('adım: en piyasalar');
       await tester.tap(find.text('Markets').first);
       await _settle(tester);
+      await _scrollToBottom(tester);
       await _capture(tester, 'en-02-markets.png');
 
       debugPrint('adım: en simülasyon');
@@ -398,17 +413,19 @@ void main() {
 
       await tester.enterText(find.byType(CupertinoTextField).first, '2');
       await _settle(tester);
+      await _scrollToTop(tester);
+      await _capture(tester, 'en-03-sale-form.png');
+
       await tester.tap(find.text('Calculate Simulation').first);
       await _settle(tester);
-
       await _revealResult(tester, 'Simulation Result');
-      await _capture(tester, 'en-03-sale-simulation.png');
+      await _capture(tester, 'en-04-sale-result.png');
 
       await tester.tap(find.text('Overview').first);
       await _settle(tester);
       await settings.toggleDarkMode();
       await _settle(tester);
-      await _capture(tester, 'en-04-dark-mode.png');
+      await _capture(tester, 'en-05-dark-mode.png');
       debugPrint('en tamam');
     });
   }, skip: !_enabled);
