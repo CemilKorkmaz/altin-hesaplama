@@ -1,29 +1,59 @@
 # Google Play mağaza metni — Türkçe
 
-## Uygulama adı
+---
+
+## 1) Uygulama adı
+
+```
 Altın Defterim
+```
 
-## Kısa açıklama
-Altın portföyünüzü takip edin, kâr/zarar ve satış simülasyonu hesaplayın.
+(15 karakter — Play sınırı 30)
 
-## Tam açıklama
-Altın Defterim ile altın birikiminizi tek bir yerden takip edin.
+---
 
-Gram, çeyrek, yarım, tam, Cumhuriyet ve 14/18/22 ayar altın alışlarınızı kaydedin. Güncel piyasa fiyatlarıyla portföyünüzün değerini, toplam maliyetinizi ve kâr/zararınızı görün.
+## 2) Kısa açıklama
 
-Özellikler:
+```
+Altın birikiminizi kaydedin; maliyet, güncel değer ve kâr/zararı görün.
+```
+
+(71 karakter — Play sınırı 80)
+
+---
+
+## 3) Tam açıklama
+
+```
+Altın Defterim, altın birikiminizi tek bir yerden takip etmenizi sağlayan sade bir portföy defteridir.
+
+Gram, çeyrek, yarım, tam, Cumhuriyet ve 14/18/22 ayar bilezik alışlarınızı kaydedin. Güncel piyasa fiyatlarıyla portföyünüzün toplam değerini, ortalama maliyetinizi ve kâr/zarar durumunuzu tek bakışta görün.
+
+ÖZELLİKLER
 • Altın türü, miktar, alış fiyatı ve tarih kaydı
-• Anahtarsız canlı fiyat kaynakları ve otomatik yenileme
+• Genel erişime açık fiyat kaynaklarından otomatik güncellenen canlı fiyatlar
 • Tür bazında ortalama maliyet ve portföy değeri
-• Gerçek işlem yapılmayan satış simülasyonu
+• Toplam maliyet ve kâr/zarar hesabı
+• Gerçek işlem yapmayan satış simülasyonu
 • Türkçe ve İngilizce arayüz
 • Tek dokunuşla koyu tema
-• Verilerinizi cihazınızda saklayan sade deneyim
+• Hesap açmadan kullanım
 
-Satış simülasyonu portföyünüzü değiştirmez. Uygulama gerçek alım/satım yapmaz ve yatırım danışmanlığı sunmaz. Fiyatlar bilgilendirme amaçlıdır; banka ve kuyumcu fiyatları farklılık gösterebilir.
+GİZLİLİĞİNİZ
+Portföy kayıtlarınız yalnızca kendi cihazınızda saklanır. Sunucuya, buluta veya geliştiriciye gönderilmez. Hesap oluşturma, reklam, analitik takip ve konum erişimi yoktur. Uygulama yalnızca güncel altın fiyatlarını indirmek için internete bağlanır ve bu isteklerde portföy bilgileriniz paylaşılmaz.
 
-## Kategori
-Araçlar (kişisel hesap) — kurumsal hesapta Finans olabilir. Bkz. `store/app-category.md`.
+ÖNEMLİ BİLGİLER
+Satış ekranı yalnızca bir simülasyondur; portföyünüzü değiştirmez, gerçek alım veya satım işlemi gerçekleştirmez. Uygulama banka, kuyumcu ya da aracı kurum değildir; yatırım danışmanlığı sunmaz. Fiyatlar bilgilendirme amaçlıdır, gecikmeli veya hatalı olabilir; banka ve kuyumcu fiyatları farklılık gösterebilir. İnternet bağlantısı yoksa uygulama örnek veri kullandığını açıkça belirtir. Yatırım kararlarınızın sorumluluğu size aittir.
 
-## İletişim
-C&A Digital Ventures — ca.digital.ventures@gmail.com
+Altın birikiminizi düzenli takip etmek için Altın Defterim'i indirin.
+```
+
+(1495 karakter — Play sınırı 4000)
+
+---
+
+## Kategori ve etiketler (bilgi amaçlı)
+
+- **Kategori:** Araçlar (kişisel hesap) · Finans (kurumsal hesap) — bkz. `store/app-category.md`
+- **Etiketler:** Portföy takibi, Hesaplama, Altın, Kişisel finans, Yatırım
+- **İletişim:** C&A Digital Ventures — ca.digital.ventures@gmail.com
