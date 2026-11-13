@@ -331,6 +331,9 @@ Future<void> _scrollToBottom(WidgetTester tester) async {
   final scrollable = find.byType(Scrollable).first;
   await tester.drag(scrollable, const Offset(0, -2600));
   await _settle(tester);
+  // Üstteki yenile simgesi kırpılmasın diye hafif geri kaydır.
+  await tester.drag(scrollable, const Offset(0, 90));
+  await _settle(tester);
 }
 
 /// Sayfanın en üstüne döner.
