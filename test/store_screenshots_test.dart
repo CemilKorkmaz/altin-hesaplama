@@ -18,6 +18,7 @@ import 'package:altin_hesaplama/services/portfolio_store.dart';
 import 'package:altin_hesaplama/state/portfolio_controller.dart';
 import 'package:altin_hesaplama/state/settings_controller.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -251,8 +252,7 @@ Future<void> _pumpApp(WidgetTester tester, SettingsController settings) async {
 }
 
 Future<void> _capture(WidgetTester tester, String fileName) async {
-  // ignore: avoid_print
-  print('yakalanıyor: $fileName');
+  debugPrint('yakalanıyor: \$fileName');
   final boundary = tester.renderObject<RenderRepaintBoundary>(
     find.byKey(_captureKey),
   );
@@ -269,8 +269,7 @@ Future<void> _capture(WidgetTester tester, String fileName) async {
   final directory = Directory(_outputDirectory)..createSync(recursive: true);
   final file = File('${directory.path}/$fileName');
   await file.writeAsBytes(bytes!, flush: true);
-  // ignore: avoid_print
-  print('yazıldı: ${file.path} (${(bytes.length / 1024).round()} KB)');
+  debugPrint('yazıldı: \${file.path} (\${(bytes.length / 1024).round()} KB)');
 }
 
 Future<SettingsController> _newSettings() async {
@@ -304,15 +303,15 @@ void main() {
     testWidgets('Türkçe', timeout: const Timeout(Duration(minutes: 4)), (tester) async {
       final settings = await _newSettings();
       await _pumpApp(tester, settings);
-      print('adım: tr özet');
+      debugPrint('adım: tr özet');
       await _capture(tester, 'tr-01-portfoy.png');
 
-      print('adım: tr piyasalar');
+      debugPrint('adım: tr piyasalar');
       await tester.tap(find.text('Piyasalar').first);
       await _settle(tester);
       await _capture(tester, 'tr-02-piyasalar.png');
 
-      print('adım: tr simülasyon');
+      debugPrint('adım: tr simülasyon');
       await tester.tap(find.text('Satış Simülasyonu').first);
       await _settle(tester);
       await tester.tap(find.text('Tür seç').first);
@@ -333,7 +332,7 @@ void main() {
       await settings.toggleDarkMode();
       await _settle(tester);
       await _capture(tester, 'tr-04-gece-modu.png');
-      print('tr tamam');
+      debugPrint('tr tamam');
     });
 
     testWidgets('İngilizce', timeout: const Timeout(Duration(minutes: 4)), (tester) async {
@@ -341,15 +340,15 @@ void main() {
       await _pumpApp(tester, settings);
       await settings.setLocale(const Locale('en'));
       await _settle(tester);
-      print('adım: en özet');
+      debugPrint('adım: en özet');
       await _capture(tester, 'en-01-portfolio.png');
 
-      print('adım: en piyasalar');
+      debugPrint('adım: en piyasalar');
       await tester.tap(find.text('Markets').first);
       await _settle(tester);
       await _capture(tester, 'en-02-markets.png');
 
-      print('adım: en simülasyon');
+      debugPrint('adım: en simülasyon');
       await tester.tap(find.text('Sale Simulator').first);
       await _settle(tester);
       await tester.tap(find.text('Select type').first);
@@ -370,7 +369,7 @@ void main() {
       await settings.toggleDarkMode();
       await _settle(tester);
       await _capture(tester, 'en-04-dark-mode.png');
-      print('en tamam');
+      debugPrint('en tamam');
     });
   }, skip: !_enabled);
 }
