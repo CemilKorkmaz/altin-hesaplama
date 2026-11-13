@@ -50,7 +50,7 @@ Yine de finans uygulaması olduğu için **işaretlemen mantıklı**:
    - Konum paylaşımı: **Hayır**
    - Dijital satın alma: **Hayır**
    - Reklam: **Hayır** (şu an)
-5. **Finansal özellikler beyanı** (yeni form): "Uygulama, kullanıcı tarafından girilen verilerle kişisel portföy takibi ve satış **simülasyonu** yapar. Gerçek para transferi, alım-satım, kredi, kripto cüzdanı veya yatırım tavsiyesi yoktur." → bu uygulama **muaf** kategoride.
+5. **Finansal özellikler beyanı**: **"Uygulamamda finans ile ilgili özellik sağlanmıyor"** seç. Hiçbir kutu uygun değil — ayrıntılı gerekçe: `store/financial-features.md`.
 
 ## Dikkat
 
