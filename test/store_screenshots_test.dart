@@ -18,6 +18,7 @@ import 'package:altin_hesaplama/state/portfolio_controller.dart';
 import 'package:altin_hesaplama/state/settings_controller.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -263,6 +264,9 @@ Future<void> _pumpApp(WidgetTester tester, SettingsController settings) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = _physicalSize;
   addTearDown(tester.view.reset);
+  // Kök yüzeyi tam hedef boyuta sabitle; aksi hâlde tuval alt öğeye küçülür.
+  await tester.binding.setSurfaceSize(_physicalSize);
+  addTearDown(() => tester.binding.setSurfaceSize(null));
 
   final controller = PortfolioController(
     priceProvider: _DemoPriceProvider(),
@@ -299,7 +303,8 @@ Future<void> _pumpApp(WidgetTester tester, SettingsController settings) async {
 /// Flutter'ın kendi golden mekanizması kullanılıyor; `--update-goldens` ile
 /// dosyalar doğrudan `store/screenshots` altına yazılır.
 Future<void> _capture(WidgetTester tester, String fileName) async {
-  debugPrint('yakalanıyor: $fileName');
+  final boundary = tester.renderObject<RenderRepaintBoundary>(find.byKey(_captureKey));
+  debugPrint('yakalanıyor: $fileName (tuval: ${boundary.size})');
   await expectLater(
     find.byKey(_captureKey),
     matchesGoldenFile('../$_outputDirectory/$fileName'),
