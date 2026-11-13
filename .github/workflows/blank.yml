@@ -115,3 +115,38 @@ jobs:
       - run: flutter pub get
       - name: iOS derlemesi (imzasız)
         run: flutter build ios --release --no-codesign
+
+  store-screenshots:
+    needs: analyze-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Mağaza ekran görüntülerini üret
+        run: GENERATE_STORE_SCREENSHOTS=1 flutter test test/store_screenshots_test.dart
+      - name: Üretilen görselleri doğrula
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import struct
+          files = sorted(Path("store/screenshots").glob("*.png"))
+          if len(files) < 8:
+              raise SystemExit(f"Beklenen 8 görsel, bulunan {len(files)}")
+          for f in files:
+              data = f.read_bytes()
+              w, h = struct.unpack(">II", data[16:24])
+              ratio = w / h
+              size_mb = len(data) / 1024 / 1024
+              ok = (max(w, h) <= 3840 and min(w, h) >= 320) and abs(ratio - 9 / 16) < 0.001 and size_mb < 8
+              print(f"{f.name}: {w}x{h} {size_mb:.2f} MB {'OK' if ok else 'GECERSIZ'}")
+              if not ok:
+                  raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: altin-defterim-store-screenshots
+          path: store/screenshots/*.png
