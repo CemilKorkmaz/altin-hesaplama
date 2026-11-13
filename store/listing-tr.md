@@ -23,7 +23,7 @@ Gram, çeyrek, yarım, tam, Cumhuriyet ve 14/18/22 ayar altın alışlarınızı
 Satış simülasyonu portföyünüzü değiştirmez. Uygulama gerçek alım/satım yapmaz ve yatırım danışmanlığı sunmaz. Fiyatlar bilgilendirme amaçlıdır; banka ve kuyumcu fiyatları farklılık gösterebilir.
 
 ## Kategori
-Finans
+Araçlar (kişisel hesap) — kurumsal hesapta Finans olabilir. Bkz. `store/app-category.md`.
 
 ## İletişim
-Geliştirici e-posta adresinizi Google Play Console'a ekleyin.
+C&A Digital Ventures — ca.digital.ventures@gmail.com

@@ -23,7 +23,7 @@ Features:
 The sale simulator does not change your portfolio. The app does not execute real trades or provide investment advice. Prices are for information only; bank and dealer prices may differ.
 
 ## Category
-Finance
+Tools (personal account) — Finance only with a verified organization account. See `store/app-category.md`.
 
 ## Contact
-Add your developer email address in Google Play Console.
+C&A Digital Ventures — ca.digital.ventures@gmail.com
