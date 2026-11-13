@@ -251,18 +251,26 @@ Future<void> _pumpApp(WidgetTester tester, SettingsController settings) async {
 }
 
 Future<void> _capture(WidgetTester tester, String fileName) async {
+  // ignore: avoid_print
+  print('yakalanıyor: $fileName');
   final boundary = tester.renderObject<RenderRepaintBoundary>(
     find.byKey(_captureKey),
   );
-  final ui.Image image = await boundary.toImage(pixelRatio: _devicePixelRatio);
-  final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-  image.dispose();
+
+  // Motorun raster iş parçacığı sahte zamanlayıcıda ilerlemediği için
+  // görüntü yakalama gerçek async bölgesinde yapılmalı.
+  final bytes = await tester.runAsync(() async {
+    final ui.Image image = await boundary.toImage(pixelRatio: _devicePixelRatio);
+    final data = await image.toByteData(format: ui.ImageByteFormat.png);
+    image.dispose();
+    return data!.buffer.asUint8List();
+  });
 
   final directory = Directory(_outputDirectory)..createSync(recursive: true);
   final file = File('${directory.path}/$fileName');
-  await file.writeAsBytes(bytes!.buffer.asUint8List(), flush: true);
+  await file.writeAsBytes(bytes!, flush: true);
   // ignore: avoid_print
-  print('yazıldı: ${file.path}');
+  print('yazıldı: ${file.path} (${(bytes.length / 1024).round()} KB)');
 }
 
 Future<SettingsController> _newSettings() async {
@@ -296,12 +304,15 @@ void main() {
     testWidgets('Türkçe', timeout: const Timeout(Duration(minutes: 4)), (tester) async {
       final settings = await _newSettings();
       await _pumpApp(tester, settings);
+      print('adım: tr özet');
       await _capture(tester, 'tr-01-portfoy.png');
 
+      print('adım: tr piyasalar');
       await tester.tap(find.text('Piyasalar').first);
       await _settle(tester);
       await _capture(tester, 'tr-02-piyasalar.png');
 
+      print('adım: tr simülasyon');
       await tester.tap(find.text('Satış Simülasyonu').first);
       await _settle(tester);
       await tester.tap(find.text('Tür seç').first);
@@ -322,6 +333,7 @@ void main() {
       await settings.toggleDarkMode();
       await _settle(tester);
       await _capture(tester, 'tr-04-gece-modu.png');
+      print('tr tamam');
     });
 
     testWidgets('İngilizce', timeout: const Timeout(Duration(minutes: 4)), (tester) async {
@@ -329,12 +341,15 @@ void main() {
       await _pumpApp(tester, settings);
       await settings.setLocale(const Locale('en'));
       await _settle(tester);
+      print('adım: en özet');
       await _capture(tester, 'en-01-portfolio.png');
 
+      print('adım: en piyasalar');
       await tester.tap(find.text('Markets').first);
       await _settle(tester);
       await _capture(tester, 'en-02-markets.png');
 
+      print('adım: en simülasyon');
       await tester.tap(find.text('Sale Simulator').first);
       await _settle(tester);
       await tester.tap(find.text('Select type').first);
@@ -355,6 +370,7 @@ void main() {
       await settings.toggleDarkMode();
       await _settle(tester);
       await _capture(tester, 'en-04-dark-mode.png');
+      print('en tamam');
     });
   }, skip: !_enabled);
 }
