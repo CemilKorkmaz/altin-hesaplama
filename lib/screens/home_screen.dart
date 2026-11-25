@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter/services.dart';
 
 import '../app.dart';
 import '../l10n/app_localizations.dart';
@@ -8,6 +9,7 @@ import '../state/portfolio_controller.dart';
 import '../state/settings_controller.dart';
 import '../utils/formatters.dart';
 import '../widgets/common.dart';
+import 'about_screen.dart';
 import 'add_purchase_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -44,6 +46,19 @@ class HomeScreen extends StatelessWidget {
                         : CupertinoIcons.moon_fill,
                     size: 23,
                   ),
+                ),
+                const SizedBox(width: 12),
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    Navigator.of(context).push(
+                      CupertinoPageRoute<void>(
+                        builder: (_) => AboutScreen(settings: settings),
+                      ),
+                    );
+                  },
+                  child: const Icon(CupertinoIcons.info_circle, size: 23),
                 ),
                 const SizedBox(width: 12),
                 CupertinoButton(
@@ -129,6 +144,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _selectLanguage(BuildContext context) {
+    HapticFeedback.selectionClick();
     showCupertinoModalPopup<void>(
       context: context,
       builder: (sheetContext) => CupertinoActionSheet(
@@ -158,6 +174,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, Purchase purchase) async {
+    HapticFeedback.selectionClick();
     final confirmed = await showCupertinoDialog<bool>(
       context: context,
       builder: (context) => CupertinoAlertDialog(

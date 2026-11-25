@@ -27,7 +27,7 @@
 |---|---|---|---|
 | Uygulama simgesi | ✅ | 512×512 PNG, 32-bit, **saydamlık yok** | Alpha kanalı varsa reddedilir |
 | Özellik grafiği | ✅ | 1024×500 PNG/JPEG, alpha **yasak** | Metin küçük kalmamalı; çok önemli alanlar kenarlardan uzak dursun |
-| Telefon ekran görüntüsü | ✅ (min 2) | 16:9 veya 9:16, 320–3840 px | Henüz üretilmedi |
+| Telefon ekran görüntüsü | ✅ (min 2, en çok 8) | 16:9 veya 9:16, 320–3840 px, 8 MB altı | `store/screenshots/` — 10 dosya hazır |
 | 7 inç / 10 inç tablet | ❌ opsiyonel | — | Yalnızca tablet desteği açılırsa |
 | Tanıtım videosu | ❌ opsiyonel | YouTube bağlantısı | Gerekmiyor |
 
@@ -57,3 +57,45 @@ Betik tek çalıştırmada üretir:
 
 Kaynak görsel: `assets/branding/app_icon_source.png` (2048×2048). Değiştirmek isterseniz
 yalnızca bu dosyayı güncelleyip betiği tekrar çalıştırmak yeterli.
+
+---
+
+## Telefon ekran görüntüleri
+
+`store/screenshots/` — her dil için 5 görsel, 1080×1920 (tam 9:16), PNG, ~0,35 MB.
+
+| # | Türkçe dosya | İngilizce dosya | İçerik |
+|---|---|---|---|
+| 1 | `tr-01-portfoy.png` | `en-01-portfolio.png` | Portföy özeti: toplam değer, kâr/zarar, varlık kartları |
+| 2 | `tr-02-piyasalar.png` | `en-02-markets.png` | Piyasalar: 8 altın türü alış/satış tablosu |
+| 3 | `tr-03-satis-formu.png` | `en-03-sale-form.png` | Satış simülasyonu formu |
+| 4 | `tr-04-satis-sonucu.png` | `en-04-sale-result.png` | Simülasyon sonucu: kâr hesabı |
+| 5 | `tr-05-gece-modu.png` | `en-05-dark-mode.png` | Koyu tema |
+
+### Nasıl üretiliyor
+
+Görseller **gerçek uygulama widget'larından** render edilir — ekran görüntüsü kırpma veya
+sahte tasarım yok:
+
+```bash
+GENERATE_STORE_SCREENSHOTS=1 flutter test --update-goldens test/store_screenshots_test.dart
+```
+
+Test dosyası:
+
+- 1080×1920 fiziksel tuval ve 432×768 mantıksal telefon düzeni kurar
+- Demo portföy (4 alış) ve sabit fiyat listesi enjekte eder — böylece her çalıştırmada
+  aynı görüntüler elde edilir
+- Roboto ve Cupertino ikon fontlarını SDK/pub cache içinden yükler (aksi hâlde test
+  ortamı her glifi kutu olarak çizer)
+- Türkçe ve İngilizce geçişleri, koyu tema ve simülasyon sonucunu gerçek etkileşimlerle açar
+
+CI'daki `store-screenshots` işi her push'ta görselleri yeniden üretir, boyut/oran
+doğrulaması yapar ve değişiklik varsa dala işler.
+
+### Play Console'a yükleme
+
+**Ana mağaza girişi → Telefon ekran görüntüleri** alanına sırayla
+`tr-01` … `tr-05` yükle. **Dil çevirileri → English** altına `en-01` … `en-05` yükle.
+Play ilk görseli arama sonuçlarında küçük resim olarak kullanır; 1. görsel portföy özeti
+olduğu için doğru seçim.

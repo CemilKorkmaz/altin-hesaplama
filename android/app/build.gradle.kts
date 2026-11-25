@@ -49,6 +49,13 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            // Play, Şubat 2027'den itibaren R8 optimizasyonu bekliyor.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }

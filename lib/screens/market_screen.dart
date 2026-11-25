@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter/services.dart';
 
 import '../app.dart';
 import '../l10n/app_localizations.dart';
@@ -25,7 +26,10 @@ class MarketScreen extends StatelessWidget {
                 ? const CupertinoActivityIndicator()
                 : CupertinoButton(
                     padding: EdgeInsets.zero,
-                    onPressed: controller.refreshPrices,
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      controller.refreshPrices();
+                    },
                     child: const Icon(CupertinoIcons.refresh, size: 24),
                   ),
           ),
