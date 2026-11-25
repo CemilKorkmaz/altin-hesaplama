@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter/services.dart';
 
 import '../app.dart';
 import '../l10n/app_localizations.dart';
@@ -96,6 +97,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
   }
 
   void _selectType() {
+    HapticFeedback.selectionClick();
     showCupertinoModalPopup<void>(
       context: context,
       builder: (context) => CupertinoActionSheet(
@@ -103,6 +105,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
         actions: GoldType.values
             .map((type) => CupertinoActionSheetAction(
                   onPressed: () {
+                    HapticFeedback.selectionClick();
                     setState(() => _type = type);
                     Navigator.pop(context);
                   },
@@ -118,6 +121,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
   }
 
   void _selectDate() {
+    HapticFeedback.selectionClick();
     showCupertinoModalPopup<void>(
       context: context,
       builder: (context) => Container(
@@ -158,6 +162,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     if (price == null || price < 0) {
       return showAppMessage(context, context.l10n.text('checkPrice'), context.l10n.text('validPurchasePrice'));
     }
+    HapticFeedback.lightImpact();
     setState(() => _isSaving = true);
     try {
       await widget.controller.addPurchase(
@@ -166,7 +171,10 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
         unitPrice: price,
         purchasedAt: _date,
       );
-      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        HapticFeedback.mediumImpact();
+        Navigator.pop(context);
+      }
     } on Object {
       if (mounted) {
         setState(() => _isSaving = false);

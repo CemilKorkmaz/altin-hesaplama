@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Altın Defterim: yalnızca cihazdaki uygulama-özel depolama kullanılır.
+	     Toplanan kişisel veri yok, reklam/analitik SDK yok, konum/kamera/
+	     mikrofon/kişiler erişimi yok. Gerekli-sebep API'leri kullanılmıyor. -->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<!-- shared_preferences: kullanıcı tercihleri (dil, tema) ve portföy kayıtları
+		     cihazda saklanır. Apple'ın UserDefaults gerekli-sebep kodu CA92.1'dir:
+		     "yalnızca uygulamanın kendisi tarafından erişilen veriler". -->
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

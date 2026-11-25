@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter/services.dart';
 
 import '../app.dart';
 import '../l10n/app_localizations.dart';
@@ -152,6 +153,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
   }
 
   void _selectType(List<GoldType> types) {
+    HapticFeedback.selectionClick();
     showCupertinoModalPopup<void>(
       context: context,
       builder: (context) => CupertinoActionSheet(
@@ -159,6 +161,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
         actions: types
             .map((type) => CupertinoActionSheetAction(
                   onPressed: () {
+                    HapticFeedback.selectionClick();
                     setState(() {
                       _type = type;
                       _result = null;
@@ -199,6 +202,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
         quantity: quantity,
         saleUnitPrice: price,
       );
+      HapticFeedback.mediumImpact();
       setState(() => _result = result);
     } on ArgumentError {
       showAppMessage(context, context.l10n.text('cannotCalculate'), context.l10n.text('saleTooLarge'));
