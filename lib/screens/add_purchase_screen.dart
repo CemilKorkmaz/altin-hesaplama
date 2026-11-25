@@ -48,7 +48,10 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
         middle: Text(context.l10n.text('newPurchase')),
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            HapticFeedback.selectionClick();
+            Navigator.pop(context);
+          },
           child: Text(context.l10n.text('cancel')),
         ),
       ),
@@ -134,7 +137,10 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: CupertinoButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    Navigator.pop(context);
+                  },
                   child: Text(context.l10n.text('done')),
                 ),
               ),
