@@ -132,4 +132,39 @@ void main() {
     controller.dispose();
     settings.dispose();
   });
+
+  testWidgets('hakkında ekranı gizlilik politikası ve dil/tema anahtarlarını gösterir',
+      (tester) async {
+    final controller = PortfolioController(
+      store: TestStore(),
+      priceProvider: TestPrices(),
+      autoRefresh: false,
+    );
+    final settings = SettingsController();
+    await tester.pumpWidget(
+      GoldPortfolioApp(controller: controller, settings: settings),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(CupertinoIcons.info_circle));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Gizlilik politikası'), findsOneWidget);
+    expect(find.textContaining('C&A Digital Ventures'), findsOneWidget);
+
+    // Dil anahtarı: Türkçe -> İngilizce
+    await tester.tap(find.text('Türkçe'));
+    await tester.pumpAndSettle();
+    expect(settings.locale.languageCode, 'en');
+    expect(find.text('Privacy policy'), findsOneWidget);
+
+    // Tema anahtarı
+    final before = settings.isDark;
+    await tester.tap(find.text(settings.isDark ? 'Dark mode' : 'Light mode'));
+    await tester.pumpAndSettle();
+    expect(settings.isDark, isNot(before));
+
+    controller.dispose();
+    settings.dispose();
+  });
 }
