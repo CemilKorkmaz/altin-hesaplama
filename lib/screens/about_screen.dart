@@ -21,6 +21,14 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ayar değiştiğinde (dil, tema) ekran kendini yenilesin.
+    return AnimatedBuilder(
+      animation: settings,
+      builder: (context, _) => _buildPage(context),
+    );
+  }
+
+  Widget _buildPage(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(context.l10n.text('about')),
@@ -46,7 +54,7 @@ class AboutScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: const Icon(
-                  CupertinoIcons.banknote,
+                  CupertinoIcons.square_stack_3d_up_fill,
                   size: 46,
                   color: AppColors.gold,
                 ),
@@ -178,16 +186,16 @@ class _LanguageRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isEnglish = settings.locale.languageCode == 'en';
+    void apply(bool value) {
+      HapticFeedback.selectionClick();
+      settings.setLocale(Locale(value ? 'en' : 'tr'));
+    }
+
     return _ToggleRow(
       icon: CupertinoIcons.globe,
       label: isEnglish ? 'English' : 'Türkçe',
-      trailing: _Switch(
-        value: isEnglish,
-        onChanged: (value) {
-          HapticFeedback.selectionClick();
-          settings.setLocale(Locale(value ? 'en' : 'tr'));
-        },
-      ),
+      onTap: () => apply(!isEnglish),
+      trailing: _Switch(value: isEnglish, onChanged: apply),
     );
   }
 }
@@ -199,16 +207,16 @@ class _ThemeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void toggle() {
+      HapticFeedback.selectionClick();
+      settings.toggleDarkMode();
+    }
+
     return _ToggleRow(
       icon: settings.isDark ? CupertinoIcons.moon_fill : CupertinoIcons.sun_max,
       label: context.l10n.text(settings.isDark ? 'darkMode' : 'lightMode'),
-      trailing: _Switch(
-        value: settings.isDark,
-        onChanged: (_) {
-          HapticFeedback.selectionClick();
-          settings.toggleDarkMode();
-        },
-      ),
+      onTap: toggle,
+      trailing: _Switch(value: settings.isDark, onChanged: (_) => toggle()),
     );
   }
 }
@@ -218,28 +226,36 @@ class _ToggleRow extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.trailing,
+    this.onTap,
   });
 
   final IconData icon;
   final String label;
   final Widget trailing;
 
+  /// Satırın tamamı dokunulabilir; switch'ten daha geniş bir hedef alanı verir.
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: AppColors.gold),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: AppColors.gold),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
             ),
-          ),
-          trailing,
-        ],
+            trailing,
+          ],
+        ),
       ),
     );
   }

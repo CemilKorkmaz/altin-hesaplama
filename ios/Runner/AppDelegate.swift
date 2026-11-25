@@ -12,7 +12,9 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
-    registerLinkChannel(engineBridge.binaryMessenger)
+    // `FlutterImplicitEngineBridge` doğrudan `binaryMessenger` sunmaz;
+    // messenger, uygulama kayıt nesnesi üzerinden alınır.
+    registerLinkChannel(engineBridge.applicationRegistrar.messenger())
   }
 
   /// Gizlilik politikası gibi harici bağlantıları sistem tarayıcısında açar.

@@ -110,13 +110,33 @@ Tarama ayrıca yaklaşan yasal tarihleri listeliyor. Bu uygulama için geçerli 
 
 - **17 Kasım 2026** — Apple Türkiye vergi/fiyat güncellemesi (ücretsiz uygulama, etkisiz)
 - **1 Ocak 2027** — ABD eyalet yaş doğrulama yasaları (California, Alabama vb.)
-- **1 Şubat 2027** — Play, EEA/UK için "trader status" beyanı
+- **1 Şubat 2027** — Play, EEA/UK için "trader status" beyanı ⚠️ tarama bunu **CRITICAL** işaretliyor; süre dolmadan Play Console → Ayarlar → Mağaza ayarlarından beyan edilmeli
 - **1 Şubat 2027** — Play teknik kalite: R8/DEX optimizasyon eşikleri ← **biz bunu şimdiden yaptık**
 
 Uygulama reklam, abonelik, kripto, sağlık verisi içermediği için listedeki yasaların
 büyük çoğunluğu kapsam dışında.
 
 ---
+
+## CI doğrulaması (gerçek derleme)
+
+Tarama statik; asıl kanıt CI'ın dört işi de yeşil geçmesi. Ödeme engeli kalktıktan
+sonra çalıştırılan derlemeler **kodda üç gerçek hata** ortaya çıkardı:
+
+| Hata | Neden | Düzeltme |
+|---|---|---|
+| `CupertinoIcons.banknote` tanımsız | Böyle bir ikon yok; `flutter analyze` iki hata verdi | `square_stack_3d_up_fill` (cupertino_icons 1.0.0+ ile var, `^1.0.8` uyumlu) |
+| Hakkında ekranı dil/tema değişimini göstermiyordu | `AboutScreen` `StatelessWidget`'tı, `settings`'i dinlemiyordu | `AnimatedBuilder(animation: settings)` |
+| Dil/tema satırında dokunma alanı çok küçüktü | Yalnızca minik `CupertinoSwitch` tıklanabiliyordu | Satırın tamamı `GestureDetector` (erişilebilirlik kazanımı) |
+| iOS: `FlutterImplicitEngineBridge` üzerinde `binaryMessenger` yok | Doğru API `applicationRegistrar.messenger()` | `AppDelegate.swift` düzeltildi |
+| `PrivacyInfo.xcprivacy` pakete girmiyordu | Dosya vardı ama Xcode projesine kayıtlı değildi — **sessiz uyumluluk açığı** | `project.pbxproj`'a Resources kaydı eklendi |
+
+Son derleme: `analyze-and-test` ✅ · `ios-build` ✅ · `android-apk` ✅ ·
+`store-screenshots` ✅ — [run 45564859727](https://github.com/CemilKorkmaz/altin-hesaplama/actions/runs/45564859727).
+
+CI ayrıca iki kalıcı koruma kazandı: iOS derleme günlüğü hata anında adım özetine
+düşüyor ve "Gizlilik manifesti pakete dahil mi" adımı `Runner.app` içinde
+`PrivacyInfo.xcprivacy` yoksa derlemeyi kırmızıya çeviriyor.
 
 ## Son tarama (düzeltmelerden sonra)
 

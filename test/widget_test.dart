@@ -152,13 +152,17 @@ void main() {
     expect(find.text('Gizlilik politikası'), findsOneWidget);
     expect(find.textContaining('C&A Digital Ventures'), findsOneWidget);
 
-    // Dil anahtarı: Türkçe -> İngilizce
+    // Dil anahtarı: Türkçe -> İngilizce.
+    // Hakkında ekranındaki satıra, ana ekrandaki dil menüsünden ayırmak için
+    // CupertinoSwitch ile aynı satırdaki 'Türkçe' etiketini hedefliyoruz.
+    expect(find.byType(CupertinoSwitch), findsNWidgets(2));
     await tester.tap(find.text('Türkçe'));
     await tester.pumpAndSettle();
     expect(settings.locale.languageCode, 'en');
     expect(find.text('Privacy policy'), findsOneWidget);
+    expect(find.text('Türkçe'), findsNothing);
 
-    // Tema anahtarı
+    // Tema anahtarı: gece -> gündüz
     final before = settings.isDark;
     await tester.tap(find.text(settings.isDark ? 'Dark mode' : 'Light mode'));
     await tester.pumpAndSettle();
