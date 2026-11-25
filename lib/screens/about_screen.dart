@@ -46,7 +46,7 @@ class AboutScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: const Icon(
-                  CupertinoIcons.banknote,
+                  CupertinoIcons.square_stack_3d_up_fill,
                   size: 46,
                   color: AppColors.gold,
                 ),
