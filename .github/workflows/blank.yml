@@ -126,6 +126,17 @@ jobs:
             python3 -c 'from pathlib import Path; text=Path("ios_build.log").read_text(); print("::error::" + text[-6000:].replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))'
           fi
           exit $status
+      - name: Gizlilik manifesti pakete dahil mi
+        run: |
+          APP=$(find build/ios -name "Runner.app" -maxdepth 4 | head -1)
+          echo "uygulama: $APP"
+          if [ -f "$APP/PrivacyInfo.xcprivacy" ]; then
+            echo "✓ PrivacyInfo.xcprivacy uygulama paketinin içinde"
+            plutil -p "$APP/PrivacyInfo.xcprivacy" || true
+          else
+            echo "::error::PrivacyInfo.xcprivacy pakete dahil edilmedi — App Store gizlilik manifesti eksik kalır"
+            exit 1
+          fi
 
   store-screenshots:
     needs: analyze-and-test
